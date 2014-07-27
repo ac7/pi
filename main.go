@@ -48,8 +48,8 @@ func main() {
 					running = false
 				}
 			default:
-				buf.Curs.HandleKey(event.Ch)
 			}
 		}
+		buf.Curs.HandleEvent(event)
 	}
 }

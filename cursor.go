@@ -68,8 +68,11 @@ func (c *cursor) moveWord(forward bool) {
 	}
 }
 
-func (c *cursor) HandleKey(key rune) {
-	switch key {
+func (c *cursor) HandleEvent(event termbox.Event) {
+	if event.Ch == 0 {
+		return
+	}
+	switch event.Ch {
 	case 'j':
 		c.y++
 	case 'k':

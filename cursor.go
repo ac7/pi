@@ -31,7 +31,9 @@ func (c *cursor) Update() {
 		c.x = 0
 	}
 
-	c.buf.Topline = c.y - c.buf.Height()/2
+	if _CENTER_EVERY_FRAME {
+		c.buf.Topline = c.y - c.buf.Height()/2
+	}
 
 	xPos := c.x
 	if xPos > len(lines[c.y]) {
@@ -39,7 +41,7 @@ func (c *cursor) Update() {
 	}
 
 	tabCount := bytes.Count(lines[c.y][:xPos], []byte{'\t'})
-	termbox.SetCursor(xPos+_LEFT_MARGIN+tabCount*(_TAB_WIDTH-1), c.y-c.buf.Topline)
+	termbox.SetCursor(xPos+tabCount*(_TAB_WIDTH-1)+c.buf.XOffset, c.y-c.buf.Topline)
 }
 
 func (c *cursor) moveWord(forward bool) {
@@ -52,7 +54,7 @@ func (c *cursor) moveWord(forward bool) {
 	}
 
 	var b byte
-	for b != ' ' {
+	for b != ' ' && b != '.' && b != ')' && b != '(' && b != '\t' {
 		if forward {
 			c.x++
 		} else {
@@ -71,28 +73,75 @@ func (c *cursor) moveWord(forward bool) {
 }
 
 func (c *cursor) HandleEvent(event termbox.Event) {
-	if event.Ch == 0 {
-		return
-	}
-	switch event.Ch {
-	case 'j':
-		c.y++
-	case 'k':
-		c.y--
-	case 'l':
+	switch c.mode {
+	case _MODE_NORMAL, _MODE_SELECT:
+		switch event.Ch {
+		// vi-ish keybindings
+		case 'j':
+			c.y++
+		case 'k':
+			c.y--
+		case 'l':
+			c.x++
+		case 'h':
+			c.x--
+		case 'e':
+			c.moveWord(true)
+		case 'b':
+			c.moveWord(false)
+		case 'g':
+			c.y = 0
+		case 'G':
+			c.y = len(c.buf.Lines)
+		case 'z':
+			c.buf.Topline = c.y - c.buf.Height()/2
+		case 'Z':
+			quit()
+		case 'i':
+			c.mode = _MODE_EDIT
+		case 'a':
+			c.mode = _MODE_EDIT
+			c.x++
+		case 'A':
+			c.mode = _MODE_EDIT
+			c.x = len(c.buf.Lines[c.y]) - 1
+		case 'I':
+			c.mode = _MODE_EDIT
+			c.x = 0
+		case 'o':
+			c.x = 0
+			c.mode = _MODE_EDIT
+			c.y++
+			c.buf.Lines = append(c.buf.Lines[:c.y], append([][]byte{[]byte{}}, c.buf.Lines[c.y:]...)...)
+		}
+	case _MODE_EDIT:
+		ch := event.Ch
+		if event.Key != 0 {
+			switch event.Key {
+			case termbox.KeySpace:
+				ch = ' '
+			case termbox.KeyTab:
+				ch = '\t'
+			case termbox.KeyBackspace, termbox.KeyBackspace2:
+				if c.x > 0 {
+					c.x--
+					copy(c.buf.Lines[c.y][c.x:], c.buf.Lines[c.y][c.x+1:])
+					c.buf.Lines[c.y][len(c.buf.Lines[c.y])-1] = 0
+					c.buf.Lines[c.y] = c.buf.Lines[c.y][:len(c.buf.Lines[c.y])-1]
+				}
+				return
+			case termbox.KeyCtrlC, termbox.KeyEsc:
+				c.mode = _MODE_NORMAL
+				c.buf.findLongestLine()
+				return
+			default:
+				return
+			}
+		}
+		c.buf.Lines[c.y] = append(c.buf.Lines[c.y], 0)
+		copy(c.buf.Lines[c.y][c.x+1:], c.buf.Lines[c.y][c.x:])
+		c.buf.Lines[c.y][c.x] = byte(ch)
 		c.x++
-	case 'h':
-		c.x--
-	case 'e':
-		c.moveWord(true)
-	case 'b':
-		c.moveWord(false)
-	case 'g':
-		c.y = 0
-	case 'G':
-		c.y = len(c.buf.Lines)
-	case 'z':
-		c.buf.Topline = c.y - c.buf.Height()/2
 	}
 }
 

@@ -15,6 +15,7 @@ type buffer struct {
 	LongestLineLen int
 	Cursor         *cursor
 	Topline        int
+	XOffset        int
 }
 
 func (buf *buffer) Width() int {
@@ -38,6 +39,10 @@ func (buf *buffer) findLongestLine() {
 
 // TODO: this is very inefficient!
 func (buf *buffer) Update() {
+	buf.XOffset = _LEFT_MARGIN
+	if _HORIZONTAL_CENTERING {
+		buf.XOffset = buf.Width()/2 - buf.LongestLineLen/2 - _LEFT_MARGIN
+	}
 	buf.Cursor.Update()
 	for i := buf.Topline; i < buf.Topline+buf.Height(); i++ {
 		if i < 0 {
@@ -47,8 +52,8 @@ func (buf *buffer) Update() {
 		}
 
 		line := buf.Lines[i]
-		puts(0, i-buf.Topline, fmt.Sprintf(fmt.Sprintf("%%%dd", _LEFT_MARGIN-1), i+1), termbox.ColorCyan, termbox.ColorBlack|termbox.AttrUnderline)
-		puts(_LEFT_MARGIN, i-buf.Topline, fmt.Sprintf("%s", line), termbox.ColorWhite, termbox.ColorBlack)
+		puts(buf.XOffset-_LEFT_MARGIN, i-buf.Topline, fmt.Sprintf(fmt.Sprintf("%%%dd", _LEFT_MARGIN-1), i+1), termbox.ColorCyan, termbox.ColorBlack|termbox.AttrUnderline)
+		puts(buf.XOffset, i-buf.Topline, fmt.Sprintf("%s", line), termbox.ColorWhite, termbox.ColorBlack)
 	}
 	statusLine("In buffer " + buf.Filename)
 }
@@ -68,10 +73,19 @@ func newBuffer(filename string) *buffer {
 		}
 	}
 	buf := &buffer{Filename: filename}
-	buf.Lines = bytes.Split(data, []byte{'\n'})
-	if len(buf.Lines) > 1 {
-		buf.Lines = buf.Lines[:len(buf.Lines)-1]
+
+	// we have to do this complicated split, allocate, and copy because otherwise the
+	// slices bleed into each other when you edit
+	lines := bytes.Split(data, []byte{'\n'})
+	if len(lines) > 1 {
+		lines = lines[:len(lines)-1]
 	}
+	buf.Lines = make([][]byte, len(lines))
+	for i, l := range lines {
+		buf.Lines[i] = make([]byte, len(l))
+		copy(buf.Lines[i], l)
+	}
+
 	buf.findLongestLine()
 	buf.Cursor = newCursor(buf)
 	return buf

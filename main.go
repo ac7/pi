@@ -7,6 +7,12 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
+var running = true
+
+func quit() {
+	running = false
+}
+
 func main() {
 	buffers := []*buffer{}
 	bufferIndex := 0
@@ -26,7 +32,6 @@ func main() {
 	}
 	defer termbox.Close()
 
-	running := true
 	for running {
 		buf := buffers[bufferIndex]
 
@@ -35,16 +40,6 @@ func main() {
 		termbox.Flush()
 
 		event := termbox.PollEvent()
-		if event.Type == termbox.EventKey {
-			switch event.Ch {
-			case 0:
-				switch event.Key {
-				case termbox.KeySpace:
-					running = false
-				}
-			default:
-			}
-		}
 		buf.Cursor.HandleEvent(event)
 	}
 }

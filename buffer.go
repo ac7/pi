@@ -10,37 +10,47 @@ import (
 )
 
 type buffer struct {
-	Filename string
-	Lines    [][]byte
-	Cursor   *cursor
-	Topline  int
+	Filename       string
+	Lines          [][]byte
+	LongestLineLen int
+	Cursor         *cursor
+	Topline        int
 }
 
-func (b *buffer) Width() int {
+func (buf *buffer) Width() int {
 	w, _ := termbox.Size()
 	return w - _LEFT_MARGIN
 }
 
-func (b *buffer) Height() int {
+func (buf *buffer) Height() int {
 	_, h := termbox.Size()
 	return h - 1 // room for the status bar
 }
 
+func (buf *buffer) findLongestLine() {
+	buf.LongestLineLen = 0
+	for _, l := range buf.Lines {
+		if len(l) > buf.LongestLineLen {
+			buf.LongestLineLen = len(l)
+		}
+	}
+}
+
 // TODO: this is very inefficient!
-func (b *buffer) Update() {
-	b.Cursor.Update()
-	for i := b.Topline; i < b.Topline+b.Height(); i++ {
+func (buf *buffer) Update() {
+	buf.Cursor.Update()
+	for i := buf.Topline; i < buf.Topline+buf.Height(); i++ {
 		if i < 0 {
 			continue
-		} else if i >= len(b.Lines) {
+		} else if i >= len(buf.Lines) {
 			break
 		}
 
-		line := b.Lines[i]
-		puts(0, i-b.Topline, fmt.Sprintf(fmt.Sprintf("%%%dd", _LEFT_MARGIN-1), i+1), termbox.ColorCyan, termbox.ColorBlack|termbox.AttrUnderline)
-		puts(_LEFT_MARGIN, i-b.Topline, fmt.Sprintf("%s", line), termbox.ColorWhite, termbox.ColorBlack)
+		line := buf.Lines[i]
+		puts(0, i-buf.Topline, fmt.Sprintf(fmt.Sprintf("%%%dd", _LEFT_MARGIN-1), i+1), termbox.ColorCyan, termbox.ColorBlack|termbox.AttrUnderline)
+		puts(_LEFT_MARGIN, i-buf.Topline, fmt.Sprintf("%s", line), termbox.ColorWhite, termbox.ColorBlack)
 	}
-	statusLine("In buffer " + b.Filename)
+	statusLine("In buffer " + buf.Filename)
 }
 
 func newBuffer(filename string) *buffer {
@@ -62,6 +72,7 @@ func newBuffer(filename string) *buffer {
 	if len(buf.Lines) > 1 {
 		buf.Lines = buf.Lines[:len(buf.Lines)-1]
 	}
+	buf.findLongestLine()
 	buf.Cursor = newCursor(buf)
 	return buf
 }

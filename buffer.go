@@ -10,25 +10,10 @@ import (
 )
 
 type buffer struct {
-	filename string
-	data     []byte
-
-	cachedLines [][]byte
-	cacheValid  bool
-
-	Cursor  *cursor
-	Topline int
-}
-
-func (b *buffer) Lines() [][]byte {
-	if !b.cacheValid {
-		b.cachedLines = bytes.Split(b.data, []byte{'\n'})
-		if len(b.cachedLines) > 1 {
-			b.cachedLines = b.cachedLines[:len(b.cachedLines)-1]
-		}
-		b.cacheValid = true
-	}
-	return b.cachedLines
+	Filename string
+	Lines    [][]byte
+	Cursor   *cursor
+	Topline  int
 }
 
 func (b *buffer) Width() int {
@@ -44,19 +29,18 @@ func (b *buffer) Height() int {
 // TODO: this is very inefficient!
 func (b *buffer) Update() {
 	b.Cursor.Update()
-	lines := b.Lines()
 	for i := b.Topline; i < b.Topline+b.Height(); i++ {
 		if i < 0 {
 			continue
-		} else if i >= len(lines) {
+		} else if i >= len(b.Lines) {
 			break
 		}
 
-		line := lines[i]
+		line := b.Lines[i]
 		puts(0, i-b.Topline, fmt.Sprintf(fmt.Sprintf("%%%dd", _LEFT_MARGIN-1), i+1), termbox.ColorCyan, termbox.ColorBlack|termbox.AttrUnderline)
 		puts(_LEFT_MARGIN, i-b.Topline, fmt.Sprintf("%s", line), termbox.ColorWhite, termbox.ColorBlack)
 	}
-	statusLine("In buffer " + b.filename)
+	statusLine("In buffer " + b.Filename)
 }
 
 func newBuffer(filename string) *buffer {
@@ -73,18 +57,17 @@ func newBuffer(filename string) *buffer {
 			filename = ""
 		}
 	}
-	buf := &buffer{
-		filename: filename,
-		data:     data,
+	buf := &buffer{Filename: filename}
+	buf.Lines = bytes.Split(data, []byte{'\n'})
+	if len(buf.Lines) > 1 {
+		buf.Lines = buf.Lines[:len(buf.Lines)-1]
 	}
 	buf.Cursor = newCursor(buf)
 	return buf
 }
 
 func newEmptyBuffer() *buffer {
-	buf := &buffer{
-		data: []byte{},
-	}
+	buf := &buffer{Lines: [][]byte{}}
 	buf.Cursor = newCursor(buf)
 	return buf
 }

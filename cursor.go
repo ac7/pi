@@ -13,7 +13,7 @@ type cursor struct {
 }
 
 func (c *cursor) Update() {
-	lines := c.buf.Lines()
+	lines := c.buf.Lines
 
 	if c.y < 0 {
 		c.y = 0
@@ -41,8 +41,7 @@ func (c *cursor) Update() {
 }
 
 func (c *cursor) moveWord(forward bool) {
-	lines := c.buf.Lines()
-	line := lines[c.y]
+	line := c.buf.Lines[c.y]
 
 	if !forward {
 		c.x--
@@ -89,7 +88,7 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 	case 'g':
 		c.y = 0
 	case 'G':
-		c.y = len(c.buf.Lines())
+		c.y = len(c.buf.Lines)
 	case 'z':
 		c.buf.Topline = c.y - c.buf.Height()/2
 	}

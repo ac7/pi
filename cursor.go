@@ -90,6 +90,8 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 		c.y = 0
 	case 'G':
 		c.y = len(c.buf.Lines())
+	case 'z':
+		c.buf.Topline = c.y - c.buf.Height()/2
 	}
 }
 

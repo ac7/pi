@@ -16,7 +16,7 @@ type buffer struct {
 	cachedLines [][]byte
 	cacheValid  bool
 
-	Curs    *cursor
+	Cursor  *cursor
 	Topline int
 }
 
@@ -42,8 +42,8 @@ func (b *buffer) Height() int {
 }
 
 // TODO: this is very inefficient!
-func (b *buffer) Draw() {
-	b.Curs.Update()
+func (b *buffer) Update() {
+	b.Cursor.Update()
 	lines := b.Lines()
 	for i := b.Topline; i < b.Topline+b.Height(); i++ {
 		if i < 0 {
@@ -77,7 +77,7 @@ func newBuffer(filename string) *buffer {
 		filename: filename,
 		data:     data,
 	}
-	buf.Curs = newCursor(buf)
+	buf.Cursor = newCursor(buf)
 	return buf
 }
 
@@ -85,6 +85,6 @@ func newEmptyBuffer() *buffer {
 	buf := &buffer{
 		data: []byte{},
 	}
-	buf.Curs = newCursor(buf)
+	buf.Cursor = newCursor(buf)
 	return buf
 }

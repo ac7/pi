@@ -31,7 +31,7 @@ func main() {
 		buf := buffers[bufferIndex]
 
 		termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
-		buf.Draw()
+		buf.Update()
 		termbox.Flush()
 
 		event := termbox.PollEvent()
@@ -45,6 +45,6 @@ func main() {
 			default:
 			}
 		}
-		buf.Curs.HandleEvent(event)
+		buf.Cursor.HandleEvent(event)
 	}
 }

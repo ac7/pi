@@ -23,6 +23,9 @@ type buffer struct {
 func (b *buffer) Lines() [][]byte {
 	if !b.cacheValid {
 		b.cachedLines = bytes.Split(b.data, []byte{'\n'})
+		if len(b.cachedLines) > 1 {
+			b.cachedLines = b.cachedLines[:len(b.cachedLines)-1]
+		}
 		b.cacheValid = true
 	}
 	return b.cachedLines

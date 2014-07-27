@@ -30,13 +30,15 @@ func main() {
 		fmt.Println("Unable to initalize termbox:", err)
 	}
 	defer termbox.Close()
-	termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
 
 	running := true
 	for running {
 		buf := buffers[bufferIndex]
+
+		termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
 		buf.draw()
 		termbox.Flush()
+
 		event := termbox.PollEvent()
 		if event.Type == termbox.EventKey {
 			switch event.Ch {
@@ -45,6 +47,7 @@ func main() {
 				case termbox.KeySpace:
 					running = false
 				}
+
 			case 'j':
 				buf.curs.y++
 			case 'k':
@@ -53,6 +56,10 @@ func main() {
 				buf.curs.x++
 			case 'h':
 				buf.curs.x--
+			case 'e':
+				buf.curs.moveWord(true)
+			case 'b':
+				buf.curs.moveWord(false)
 			}
 		}
 	}

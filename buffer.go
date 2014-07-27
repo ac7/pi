@@ -12,23 +12,47 @@ import (
 const _LEFT_MARGIN = 4
 
 type buffer struct {
-	filename string
-	data     []byte
-	curs     *cursor
+	filename    string
+	unchanged   bool
+	data        []byte
+	cachedLines [][]byte
+	curs        *cursor
+	topline     int
 }
 
 func (b *buffer) lines() [][]byte {
-	lines := bytes.Split(b.data, []byte{'\n'})
-	return lines
+	if !b.unchanged {
+		b.cachedLines = bytes.Split(b.data, []byte{'\n'})
+		b.unchanged = true
+	}
+	return b.cachedLines
+}
+
+func (b *buffer) width() int {
+	w, _ := termbox.Size()
+	return w - _LEFT_MARGIN
+}
+
+func (b *buffer) height() int {
+	_, h := termbox.Size()
+	return h - 1 // room for the status bar
 }
 
 // TODO: this is very inefficient!
 func (b *buffer) draw() {
-	for i, line := range b.lines() {
-		puts(0, i, fmt.Sprintf(fmt.Sprintf("%%%dd", _LEFT_MARGIN-1), i), termbox.ColorCyan, termbox.ColorBlack|termbox.AttrUnderline)
-		puts(_LEFT_MARGIN, i, fmt.Sprintf("%s", line), termbox.ColorWhite, termbox.ColorBlack)
+	b.curs.update()
+	lines := b.lines()
+	for i := b.topline; i < b.topline+b.height(); i++ {
+		if i < 0 {
+			continue
+		} else if i >= len(lines) {
+			break
+		}
+
+		line := lines[i]
+		puts(0, i-b.topline, fmt.Sprintf(fmt.Sprintf("%%%dd", _LEFT_MARGIN-1), i+1), termbox.ColorCyan, termbox.ColorBlack|termbox.AttrUnderline)
+		puts(_LEFT_MARGIN, i-b.topline, fmt.Sprintf("%s", line), termbox.ColorWhite, termbox.ColorBlack)
 	}
-	b.curs.update(b)
 	statusLine("In buffer " + b.filename)
 }
 
@@ -46,17 +70,18 @@ func newBuffer(filename string) *buffer {
 			filename = ""
 		}
 	}
-	return &buffer{
-		filename,
-		data,
-		&cursor{0, 0},
+	buf := &buffer{
+		filename: filename,
+		data:     data,
 	}
+	buf.curs = &cursor{0, 0, buf}
+	return buf
 }
 
 func newEmptyBuffer() *buffer {
-	return &buffer{
-		"",
-		[]byte{},
-		&cursor{0, 0},
+	buf := &buffer{
+		data: []byte{},
 	}
+	buf.curs = &cursor{0, 0, buf}
+	return buf
 }

@@ -1,6 +1,10 @@
 package main
 
-import "github.com/nsf/termbox-go"
+import (
+	"bytes"
+
+	"github.com/nsf/termbox-go"
+)
 
 type cursor struct {
 	x, y int
@@ -28,7 +32,8 @@ func (c *cursor) update() {
 		c.x = len(lines[c.y])
 	}
 
-	termbox.SetCursor(c.x+_LEFT_MARGIN, c.y-c.buf.topline)
+	tabCount := bytes.Count(lines[c.y][:c.x], []byte{'\t'})
+	termbox.SetCursor(c.x+_LEFT_MARGIN+tabCount*(_TAB_WIDTH-1), c.y-c.buf.topline)
 }
 
 func (c *cursor) moveWord(forward bool) {

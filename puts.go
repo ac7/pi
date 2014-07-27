@@ -7,7 +7,7 @@ func puts(x, y int, str string, fg, bg termbox.Attribute) {
 	for _, b := range str {
 		termbox.SetCell(x+pos, y, b, fg, bg)
 		if b == '\t' {
-			pos += 8
+			pos += _TAB_WIDTH
 		} else {
 			pos++
 		}

@@ -9,8 +9,6 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
-const _LEFT_MARGIN = 4
-
 type buffer struct {
 	filename    string
 	unchanged   bool

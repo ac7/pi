@@ -19,6 +19,12 @@ func main() {
 		buffers = append(buffers, newBuffer(arg))
 	}
 
+	if len(buffers) == 0 {
+		buffers = []*buffer{
+			newEmptyBuffer(),
+		}
+	}
+
 	err := termbox.Init()
 	if err != nil {
 		fmt.Println("Unable to initalize termbox:", err)
@@ -28,17 +34,25 @@ func main() {
 
 	running := true
 	for running {
-		if len(buffers) == 0 {
-			statusLine("No buffers loaded")
-		} else {
-			buffers[bufferIndex].draw()
-		}
+		buf := buffers[bufferIndex]
+		buf.draw()
 		termbox.Flush()
 		event := termbox.PollEvent()
 		if event.Type == termbox.EventKey {
-			switch event.Key {
-			case termbox.KeySpace:
-				running = false
+			switch event.Ch {
+			case 0:
+				switch event.Key {
+				case termbox.KeySpace:
+					running = false
+				}
+			case 'j':
+				buf.curs.y++
+			case 'k':
+				buf.curs.y--
+			case 'l':
+				buf.curs.x++
+			case 'h':
+				buf.curs.x--
 			}
 		}
 	}

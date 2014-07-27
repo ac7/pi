@@ -9,18 +9,26 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
+const _LEFT_MARGIN = 4
+
 type buffer struct {
 	filename string
 	data     []byte
+	curs     *cursor
+}
+
+func (b *buffer) lines() [][]byte {
+	lines := bytes.Split(b.data, []byte{'\n'})
+	return lines
 }
 
 // TODO: this is very inefficient!
 func (b *buffer) draw() {
-	lines := bytes.Split(b.data, []byte{'\n'})
-	for i, line := range lines {
-		puts(0, i, fmt.Sprintf("%3d", i), termbox.ColorCyan, termbox.ColorBlack|termbox.AttrUnderline)
-		puts(4, i, fmt.Sprintf("%s", line), termbox.ColorWhite, termbox.ColorBlack)
+	for i, line := range b.lines() {
+		puts(0, i, fmt.Sprintf(fmt.Sprintf("%%%dd", _LEFT_MARGIN-1), i), termbox.ColorCyan, termbox.ColorBlack|termbox.AttrUnderline)
+		puts(_LEFT_MARGIN, i, fmt.Sprintf("%s", line), termbox.ColorWhite, termbox.ColorBlack)
 	}
+	b.curs.update(b)
 	statusLine("In buffer " + b.filename)
 }
 
@@ -41,5 +49,14 @@ func newBuffer(filename string) *buffer {
 	return &buffer{
 		filename,
 		data,
+		&cursor{0, 0},
+	}
+}
+
+func newEmptyBuffer() *buffer {
+	return &buffer{
+		"",
+		[]byte{},
+		&cursor{0, 0},
 	}
 }

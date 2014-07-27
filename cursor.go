@@ -28,12 +28,15 @@ func (c *cursor) update() {
 
 	if c.x < 0 {
 		c.x = 0
-	} else if c.x > len(lines[c.y]) {
-		c.x = len(lines[c.y])
 	}
 
-	tabCount := bytes.Count(lines[c.y][:c.x], []byte{'\t'})
-	termbox.SetCursor(c.x+_LEFT_MARGIN+tabCount*(_TAB_WIDTH-1), c.y-c.buf.topline)
+	xPos := c.x
+	if xPos > len(lines[c.y]) {
+		xPos = len(lines[c.y])
+	}
+
+	tabCount := bytes.Count(lines[c.y][:xPos], []byte{'\t'})
+	termbox.SetCursor(xPos+_LEFT_MARGIN+tabCount*(_TAB_WIDTH-1), c.y-c.buf.topline)
 }
 
 func (c *cursor) moveWord(forward bool) {

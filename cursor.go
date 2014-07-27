@@ -67,3 +67,20 @@ func (c *cursor) moveWord(forward bool) {
 		c.x++
 	}
 }
+
+func (c *cursor) handleKey(key rune) {
+	switch key {
+	case 'j':
+		c.y++
+	case 'k':
+		c.y--
+	case 'l':
+		c.x++
+	case 'h':
+		c.x--
+	case 'e':
+		c.moveWord(true)
+	case 'b':
+		c.moveWord(false)
+	}
+}

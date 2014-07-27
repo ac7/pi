@@ -47,19 +47,8 @@ func main() {
 				case termbox.KeySpace:
 					running = false
 				}
-
-			case 'j':
-				buf.curs.y++
-			case 'k':
-				buf.curs.y--
-			case 'l':
-				buf.curs.x++
-			case 'h':
-				buf.curs.x--
-			case 'e':
-				buf.curs.moveWord(true)
-			case 'b':
-				buf.curs.moveWord(false)
+			default:
+				buf.curs.handleKey(event.Ch)
 			}
 		}
 	}

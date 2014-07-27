@@ -108,10 +108,13 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 		case 'I':
 			c.mode = _MODE_EDIT
 			c.x = 0
+		case 'O':
+			c.y--
+			fallthrough
 		case 'o':
 			c.x = 0
-			c.mode = _MODE_EDIT
 			c.y++
+			c.mode = _MODE_EDIT
 			c.buf.Lines = append(c.buf.Lines[:c.y], append([][]byte{[]byte{}}, c.buf.Lines[c.y:]...)...)
 		}
 	case _MODE_EDIT:

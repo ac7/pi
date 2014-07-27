@@ -7,11 +7,6 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
-func statusLine(info string) {
-	_, h := termbox.Size()
-	puts(0, h-1, ">status: "+info, termbox.ColorBlue, termbox.ColorDefault)
-}
-
 func main() {
 	buffers := []*buffer{}
 	bufferIndex := 0

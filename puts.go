@@ -13,3 +13,8 @@ func puts(x, y int, str string, fg, bg termbox.Attribute) {
 		}
 	}
 }
+
+func statusLine(info string) {
+	_, h := termbox.Size()
+	puts(0, h-1, ">status: "+info, termbox.ColorBlue, termbox.ColorDefault)
+}

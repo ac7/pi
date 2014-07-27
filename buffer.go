@@ -67,7 +67,7 @@ func newBuffer(filename string) *buffer {
 }
 
 func newEmptyBuffer() *buffer {
-	buf := &buffer{Lines: [][]byte{}}
+	buf := &buffer{Lines: [][]byte{[]byte{}}}
 	buf.Cursor = newCursor(buf)
 	return buf
 }

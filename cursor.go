@@ -31,6 +31,8 @@ func (c *cursor) Update() {
 		c.x = 0
 	}
 
+	c.buf.Topline = c.y - c.buf.Height()/2
+
 	xPos := c.x
 	if xPos > len(lines[c.y]) {
 		xPos = len(lines[c.y])

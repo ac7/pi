@@ -11,8 +11,8 @@ type cursor struct {
 	buf  *buffer
 }
 
-func (c *cursor) update() {
-	lines := c.buf.lines()
+func (c *cursor) Update() {
+	lines := c.buf.Lines()
 
 	if c.y < 0 {
 		c.y = 0
@@ -20,10 +20,10 @@ func (c *cursor) update() {
 		c.y = len(lines) - 1
 	}
 
-	if c.y < c.buf.topline {
-		c.buf.topline -= 8
-	} else if c.y >= c.buf.topline+c.buf.height() {
-		c.buf.topline += 8
+	if c.y < c.buf.Topline {
+		c.buf.Topline -= 8
+	} else if c.y >= c.buf.Topline+c.buf.Height() {
+		c.buf.Topline += 8
 	}
 
 	if c.x < 0 {
@@ -36,11 +36,11 @@ func (c *cursor) update() {
 	}
 
 	tabCount := bytes.Count(lines[c.y][:xPos], []byte{'\t'})
-	termbox.SetCursor(xPos+_LEFT_MARGIN+tabCount*(_TAB_WIDTH-1), c.y-c.buf.topline)
+	termbox.SetCursor(xPos+_LEFT_MARGIN+tabCount*(_TAB_WIDTH-1), c.y-c.buf.Topline)
 }
 
 func (c *cursor) moveWord(forward bool) {
-	lines := c.buf.lines()
+	lines := c.buf.Lines()
 	line := lines[c.y]
 
 	if !forward {
@@ -68,7 +68,7 @@ func (c *cursor) moveWord(forward bool) {
 	}
 }
 
-func (c *cursor) handleKey(key rune) {
+func (c *cursor) HandleKey(key rune) {
 	switch key {
 	case 'j':
 		c.y++

@@ -10,37 +10,39 @@ import (
 )
 
 type buffer struct {
-	filename    string
-	unchanged   bool
-	data        []byte
+	filename string
+	data     []byte
+
 	cachedLines [][]byte
-	curs        *cursor
-	topline     int
+	cacheValid  bool
+
+	Curs    *cursor
+	Topline int
 }
 
-func (b *buffer) lines() [][]byte {
-	if !b.unchanged {
+func (b *buffer) Lines() [][]byte {
+	if !b.cacheValid {
 		b.cachedLines = bytes.Split(b.data, []byte{'\n'})
-		b.unchanged = true
+		b.cacheValid = true
 	}
 	return b.cachedLines
 }
 
-func (b *buffer) width() int {
+func (b *buffer) Width() int {
 	w, _ := termbox.Size()
 	return w - _LEFT_MARGIN
 }
 
-func (b *buffer) height() int {
+func (b *buffer) Height() int {
 	_, h := termbox.Size()
 	return h - 1 // room for the status bar
 }
 
 // TODO: this is very inefficient!
-func (b *buffer) draw() {
-	b.curs.update()
-	lines := b.lines()
-	for i := b.topline; i < b.topline+b.height(); i++ {
+func (b *buffer) Draw() {
+	b.Curs.Update()
+	lines := b.Lines()
+	for i := b.Topline; i < b.Topline+b.Height(); i++ {
 		if i < 0 {
 			continue
 		} else if i >= len(lines) {
@@ -48,8 +50,8 @@ func (b *buffer) draw() {
 		}
 
 		line := lines[i]
-		puts(0, i-b.topline, fmt.Sprintf(fmt.Sprintf("%%%dd", _LEFT_MARGIN-1), i+1), termbox.ColorCyan, termbox.ColorBlack|termbox.AttrUnderline)
-		puts(_LEFT_MARGIN, i-b.topline, fmt.Sprintf("%s", line), termbox.ColorWhite, termbox.ColorBlack)
+		puts(0, i-b.Topline, fmt.Sprintf(fmt.Sprintf("%%%dd", _LEFT_MARGIN-1), i+1), termbox.ColorCyan, termbox.ColorBlack|termbox.AttrUnderline)
+		puts(_LEFT_MARGIN, i-b.Topline, fmt.Sprintf("%s", line), termbox.ColorWhite, termbox.ColorBlack)
 	}
 	statusLine("In buffer " + b.filename)
 }
@@ -72,7 +74,7 @@ func newBuffer(filename string) *buffer {
 		filename: filename,
 		data:     data,
 	}
-	buf.curs = &cursor{0, 0, buf}
+	buf.Curs = &cursor{0, 0, buf}
 	return buf
 }
 
@@ -80,6 +82,6 @@ func newEmptyBuffer() *buffer {
 	buf := &buffer{
 		data: []byte{},
 	}
-	buf.curs = &cursor{0, 0, buf}
+	buf.Curs = &cursor{0, 0, buf}
 	return buf
 }

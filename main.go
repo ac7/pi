@@ -36,7 +36,7 @@ func main() {
 		buf := buffers[bufferIndex]
 
 		termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
-		buf.draw()
+		buf.Draw()
 		termbox.Flush()
 
 		event := termbox.PollEvent()
@@ -48,7 +48,7 @@ func main() {
 					running = false
 				}
 			default:
-				buf.curs.handleKey(event.Ch)
+				buf.Curs.HandleKey(event.Ch)
 			}
 		}
 	}

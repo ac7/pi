@@ -8,6 +8,7 @@ import (
 
 type cursor struct {
 	x, y int
+	mode mode
 	buf  *buffer
 }
 
@@ -85,5 +86,18 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 		c.moveWord(true)
 	case 'b':
 		c.moveWord(false)
+	case 'g':
+		c.y = 0
+	case 'G':
+		c.y = len(c.buf.Lines())
+	}
+}
+
+func newCursor(buf *buffer) *cursor {
+	return &cursor{
+		x:    0,
+		y:    0,
+		buf:  buf,
+		mode: _MODE_NORMAL,
 	}
 }

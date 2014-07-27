@@ -77,7 +77,7 @@ func newBuffer(filename string) *buffer {
 		filename: filename,
 		data:     data,
 	}
-	buf.Curs = &cursor{0, 0, buf}
+	buf.Curs = newCursor(buf)
 	return buf
 }
 
@@ -85,6 +85,6 @@ func newEmptyBuffer() *buffer {
 	buf := &buffer{
 		data: []byte{},
 	}
-	buf.Curs = &cursor{0, 0, buf}
+	buf.Curs = newCursor(buf)
 	return buf
 }

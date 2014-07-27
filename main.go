@@ -24,10 +24,9 @@ func main() {
 		fmt.Println("Unable to initalize termbox:", err)
 	}
 	defer termbox.Close()
+	termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
 
-	termbox.Clear(termbox.ColorWhite, termbox.ColorWhite)
 	running := true
-
 	for running {
 		if len(buffers) == 0 {
 			statusLine("No buffers loaded")

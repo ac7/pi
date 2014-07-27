@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -17,7 +18,8 @@ type buffer struct {
 func (b *buffer) draw() {
 	lines := bytes.Split(b.data, []byte{'\n'})
 	for i, line := range lines {
-		puts(0, i, string(line), termbox.ColorGreen, termbox.ColorDefault)
+		puts(0, i, fmt.Sprintf("%3d", i), termbox.ColorCyan, termbox.ColorBlack|termbox.AttrUnderline)
+		puts(4, i, fmt.Sprintf("%s", line), termbox.ColorWhite, termbox.ColorBlack)
 	}
 	statusLine("In buffer " + b.filename)
 }

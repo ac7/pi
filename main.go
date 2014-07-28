@@ -59,6 +59,10 @@ func main() {
 		termbox.Flush()
 
 		event := termbox.PollEvent()
+		if event.Key == termbox.KeyCtrlQ {
+			running = false
+			break
+		}
 		if buf.Cursor.mode == _MODE_NORMAL {
 			switch event.Ch {
 			case '{':

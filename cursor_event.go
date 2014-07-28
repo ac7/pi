@@ -64,8 +64,7 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			c.y++
 		case 'p':
 			c.InsertLine()
-			c.buf.Lines[c.y] = make([]byte, len(c.cutBuffer))
-			copy(c.buf.Lines[c.y], c.cutBuffer)
+			c.buf.Lines[c.y] = string(c.cutBuffer)
 		case 'O':
 			c.y--
 			fallthrough
@@ -84,10 +83,8 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			case termbox.KeyBackspace, termbox.KeyBackspace2:
 				if c.x > 0 {
 					c.x--
-					copy(c.buf.Lines[c.y][c.x:], c.buf.Lines[c.y][c.x+1:])
-					c.buf.Lines[c.y][len(c.buf.Lines[c.y])-1] = 0
-					c.buf.Lines[c.y] = c.buf.Lines[c.y][:len(c.buf.Lines[c.y])-1]
-				} else {
+					c.buf.Lines[c.y] = c.buf.Lines[c.y][:c.x] + c.buf.Lines[c.y][c.x+1:]
+				} else if c.y > 0 {
 					c.DeleteLine()
 				}
 				return
@@ -106,11 +103,9 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 		// insert the byte into the middle of the line
 		if c.x == len(c.buf.Lines[c.y]) {
 			// shortcut case: when we're already at the end of the line
-			c.buf.Lines[c.y] = append(c.buf.Lines[c.y], byte(ch))
+			c.buf.Lines[c.y] = c.buf.Lines[c.y] + string(ch)
 		} else {
-			c.buf.Lines[c.y] = append(c.buf.Lines[c.y], 0)
-			copy(c.buf.Lines[c.y][c.x+1:], c.buf.Lines[c.y][c.x:])
-			c.buf.Lines[c.y][c.x] = byte(ch)
+			c.buf.Lines[c.y] = c.buf.Lines[c.y][c.x-1:] + string(ch) + c.buf.Lines[c.y][:c.x]
 		}
 		c.x++
 	}

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bytes"
+	"strings"
 
 	"github.com/nsf/termbox-go"
 )
@@ -46,7 +46,7 @@ func (c *cursor) Update() {
 		xPos = len(lines[c.y])
 	}
 
-	tabCount := bytes.Count(lines[c.y][:xPos], []byte{'\t'})
+	tabCount := strings.Count(lines[c.y][:xPos], "\t")
 	termbox.SetCursor(xPos+tabCount*(_TAB_WIDTH-1)+c.buf.XOffset, c.y-c.buf.Topline)
 }
 
@@ -80,7 +80,7 @@ func (c *cursor) DeleteLine() {
 
 func (c *cursor) InsertLine() {
 	c.y++
-	c.buf.Lines = append(c.buf.Lines[:c.y], append([][]byte{[]byte{}}, c.buf.Lines[c.y:]...)...)
+	c.buf.Lines = append(c.buf.Lines[:c.y], append([]string{""}, c.buf.Lines[c.y:]...)...)
 	c.x = 0
 	c.buf.ChangedSinceWrite = true
 }

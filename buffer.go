@@ -11,7 +11,7 @@ import (
 
 type buffer struct {
 	Filename          string
-	Lines             [][]byte
+	Lines             []string
 	LongestLineLen    int
 	Cursor            *cursor
 	Topline           int
@@ -71,7 +71,7 @@ func (buf *buffer) Save() error {
 	}
 	defer file.Close()
 	for _, l := range buf.Lines {
-		file.Write(append(l, '\n'))
+		file.WriteString(l + "\n")
 	}
 	StatusLine(fmt.Sprintf(`[%s] %d lines written to disk`, buf.Filename, len(buf.Lines)))
 	buf.ChangedSinceWrite = false
@@ -112,10 +112,9 @@ func newBuffer(filename string) *buffer {
 		lines = lines[:len(lines)-1]
 		StatusLine(fmt.Sprintf(`[%s] %d lines loaded`, filename, len(lines)))
 	}
-	buf.Lines = make([][]byte, len(lines))
+	buf.Lines = make([]string, len(lines))
 	for i, l := range lines {
-		buf.Lines[i] = make([]byte, len(l))
-		copy(buf.Lines[i], l)
+		buf.Lines[i] = string(l)
 	}
 
 	buf.findLongestLine()
@@ -124,7 +123,7 @@ func newBuffer(filename string) *buffer {
 }
 
 func newEmptyBuffer() *buffer {
-	buf := &buffer{Lines: [][]byte{[]byte{}}}
+	buf := &buffer{Lines: []string{""}}
 	buf.Cursor = newCursor(buf)
 	return buf
 }

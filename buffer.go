@@ -52,24 +52,43 @@ func (buf *buffer) Update() {
 		}
 
 		line := buf.Lines[i]
+
+		// line number
 		puts(buf.XOffset-_LEFT_MARGIN, i-buf.Topline, fmt.Sprintf(fmt.Sprintf("%%%dd", _LEFT_MARGIN-1), i+1), termbox.ColorCyan, termbox.ColorBlack|termbox.AttrUnderline)
+
+		// actual line
 		puts(buf.XOffset, i-buf.Topline, fmt.Sprintf("%s", line), termbox.ColorWhite, termbox.ColorBlack)
 	}
-	statusLine("In buffer " + buf.Filename)
+}
+
+func (buf *buffer) Save() {
+	file, err := os.Create(buf.Filename)
+	if err != nil {
+		StatusLine(fmt.Sprintf(`Could not open file "%s" for writing: %s`, buf.Filename, err))
+		return
+	}
+	defer file.Close()
+	for _, l := range buf.Lines {
+		file.Write(append(l, '\n'))
+	}
+	StatusLine(fmt.Sprintf(`[%s] %d lines written to disk`, buf.Filename, len(buf.Lines)))
+}
+
+func (buf *buffer) CenterOnCursor() {
+	buf.Topline = buf.Cursor.y - buf.Height()/2
 }
 
 func newBuffer(filename string) *buffer {
 	var data []byte
 	file, err := os.Open(filename)
 	if err != nil {
-		data = []byte("Unable to open file " + filename)
-		filename = ""
+		StatusLine(fmt.Sprintf(`Unable to open file "%s"`, filename))
 	} else {
 		defer file.Close()
 		data, err = ioutil.ReadAll(file)
 		if err != nil {
-			data = []byte("Unable to read from file " + filename)
-			filename = ""
+			StatusLine(fmt.Sprintf(`Unable to read from file "%s"`, filename))
+			data = []byte{}
 		}
 	}
 	buf := &buffer{Filename: filename}

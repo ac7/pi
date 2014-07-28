@@ -32,11 +32,13 @@ func main() {
 	}
 	defer termbox.Close()
 
+	buffers[bufferIndex].CenterOnCursor()
 	for running {
 		buf := buffers[bufferIndex]
 
 		termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
 		buf.Update()
+		drawStatusLine()
 		termbox.Flush()
 
 		event := termbox.PollEvent()

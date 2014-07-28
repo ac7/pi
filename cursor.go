@@ -92,8 +92,10 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 		case 'G':
 			c.y = len(c.buf.Lines)
 		case 'z':
-			c.buf.Topline = c.y - c.buf.Height()/2
+			c.buf.CenterOnCursor()
 		case 'Z':
+			c.buf.Save()
+		case 'Q':
 			quit()
 		case 'i':
 			c.mode = _MODE_EDIT

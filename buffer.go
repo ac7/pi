@@ -46,7 +46,7 @@ func (buf *buffer) Update() {
 		buf.XOffset = buf.Width()/2 - buf.LongestLineLen/2 - _LEFT_MARGIN
 	}
 	buf.Cursor.Update()
-	for i := buf.Topline; i < buf.Topline+buf.Height(); i++ {
+	for i := buf.Topline; i < buf.Topline+buf.Height()-1; i++ {
 		if i < 0 {
 			continue
 		} else if i >= len(buf.Lines) {

@@ -47,12 +47,6 @@ func (c *cursor) Update() {
 func (c *cursor) moveWord(forward bool) {
 	line := c.buf.Lines[c.y]
 
-	if !forward {
-		c.x--
-	} else {
-		c.x++
-	}
-
 	var b byte
 	for b != ' ' && b != '.' && b != ')' && b != '(' && b != '\t' {
 		if forward {
@@ -64,11 +58,6 @@ func (c *cursor) moveWord(forward bool) {
 			break
 		}
 		b = line[c.x]
-	}
-	if forward {
-		c.x--
-	} else {
-		c.x++
 	}
 }
 
@@ -84,10 +73,19 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 		case 'l':
 			c.x++
 		case 'h':
+			if c.x >= len(c.buf.Lines[c.y]) {
+				c.x = len(c.buf.Lines[c.y])
+			}
 			c.x--
 		case 'e':
+			if c.x < 0 {
+				c.x = 0
+			}
 			c.moveWord(true)
 		case 'b':
+			if c.x >= len(c.buf.Lines[c.y]) {
+				c.x = len(c.buf.Lines[c.y]) - 1
+			}
 			c.moveWord(false)
 		case 'g':
 			c.y = 0
@@ -104,7 +102,7 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			c.x++
 		case 'A':
 			c.mode = _MODE_EDIT
-			c.x = len(c.buf.Lines[c.y]) - 1
+			c.x = len(c.buf.Lines[c.y])
 		case 'I':
 			c.mode = _MODE_EDIT
 			c.x = 0
@@ -141,10 +139,15 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 				return
 			}
 		}
-		c.buf.Lines[c.y] = append(c.buf.Lines[c.y], 0)
-		copy(c.buf.Lines[c.y][c.x+1:], c.buf.Lines[c.y][c.x:])
-		c.buf.Lines[c.y][c.x] = byte(ch)
-		c.x++
+		if c.x == len(c.buf.Lines[c.y]) {
+			c.buf.Lines[c.y] = append(c.buf.Lines[c.y], byte(ch))
+			c.x++
+		} else {
+			c.buf.Lines[c.y] = append(c.buf.Lines[c.y], 0)
+			copy(c.buf.Lines[c.y][c.x+1:], c.buf.Lines[c.y][c.x:])
+			c.buf.Lines[c.y][c.x] = byte(ch)
+			c.x++
+		}
 	}
 }
 

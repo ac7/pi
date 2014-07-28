@@ -38,7 +38,7 @@ func main() {
 
 		termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
 		buf.Update()
-		drawStatusLine()
+		drawStatusLine(buf)
 		termbox.Flush()
 
 		event := termbox.PollEvent()

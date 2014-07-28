@@ -82,7 +82,7 @@ func newBuffer(filename string) *buffer {
 	var data []byte
 	file, err := os.Open(filename)
 	if err != nil {
-		StatusLine(fmt.Sprintf(`Unable to open file "%s"`, filename))
+		StatusLine(fmt.Sprintf(`[%s] New file loaded`, filename))
 	} else {
 		defer file.Close()
 		data, err = ioutil.ReadAll(file)

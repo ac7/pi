@@ -112,10 +112,8 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			c.y--
 			fallthrough
 		case 'o':
-			c.x = 0
-			c.y++
+			c.InsertLine()
 			c.mode = _MODE_EDIT
-			c.buf.Lines = append(c.buf.Lines[:c.y], append([][]byte{[]byte{}}, c.buf.Lines[c.y:]...)...)
 		}
 	case _MODE_EDIT:
 		ch := event.Ch
@@ -137,6 +135,9 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 				c.mode = _MODE_NORMAL
 				c.buf.findLongestLine()
 				return
+			case termbox.KeyEnter:
+				c.InsertLine()
+				return
 			default:
 				return
 			}
@@ -151,6 +152,12 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			c.x++
 		}
 	}
+}
+
+func (c *cursor) InsertLine() {
+	c.y++
+	c.buf.Lines = append(c.buf.Lines[:c.y], append([][]byte{[]byte{}}, c.buf.Lines[c.y:]...)...)
+	c.x = 0
 }
 
 func newCursor(buf *buffer) *cursor {

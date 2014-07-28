@@ -20,21 +20,29 @@ func main() {
 		buffers = append(buffers, newBuffer(arg))
 	}
 
-	if len(buffers) == 0 {
-		buffers = []*buffer{
-			newEmptyBuffer(),
-		}
-	}
-
 	err := termbox.Init()
 	if err != nil {
 		fmt.Println("Unable to initalize termbox:", err)
 	}
 	defer termbox.Close()
 
-	buffers[bufferIndex].CenterOnCursor()
 	for running {
+		if len(buffers) == 0 {
+			buffers = []*buffer{
+				newEmptyBuffer(),
+			}
+			bufferIndex = 0
+		}
+
 		buf := buffers[bufferIndex]
+		if buf.Closed {
+			buffers = buffers[:bufferIndex+copy(buffers[bufferIndex:], buffers[bufferIndex+1:])]
+			bufferIndex--
+			if bufferIndex < 0 {
+				bufferIndex = 0
+			}
+			continue
+		}
 
 		termbox.Clear(termbox.ColorWhite, termbox.ColorBlack)
 		buf.Update()

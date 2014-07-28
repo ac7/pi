@@ -97,7 +97,10 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 
 		// save/quit
 		case 'Z':
-			c.buf.Save()
+			err := c.buf.Save()
+			if err == nil {
+				c.buf.Close()
+			}
 		case 'Q':
 			quit()
 
@@ -113,6 +116,8 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 		case 'I':
 			c.mode = _MODE_EDIT
 			c.x = 0
+		case 'D':
+			c.DeleteLine()
 		case 'O':
 			c.y--
 			fallthrough
@@ -147,16 +152,26 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 				return
 			}
 		}
+
+		// insert the byte into the middle of the line
 		if c.x == len(c.buf.Lines[c.y]) {
+			// shortcut case: when we're already at the end of the line
 			c.buf.Lines[c.y] = append(c.buf.Lines[c.y], byte(ch))
-			c.x++
 		} else {
 			c.buf.Lines[c.y] = append(c.buf.Lines[c.y], 0)
 			copy(c.buf.Lines[c.y][c.x+1:], c.buf.Lines[c.y][c.x:])
 			c.buf.Lines[c.y][c.x] = byte(ch)
-			c.x++
 		}
+		c.x++
 	}
+}
+
+func (c *cursor) DeleteLine() {
+	if len(c.buf.Lines) < 1 {
+		return
+	}
+	c.buf.Lines = append(c.buf.Lines[:c.y], c.buf.Lines[c.y+1:]...)
+	c.y--
 }
 
 func (c *cursor) InsertLine() {

@@ -16,6 +16,7 @@ type buffer struct {
 	Cursor         *cursor
 	Topline        int
 	XOffset        int
+	Closed         bool
 }
 
 func (buf *buffer) Width() int {
@@ -61,17 +62,22 @@ func (buf *buffer) Update() {
 	}
 }
 
-func (buf *buffer) Save() {
+func (buf *buffer) Save() error {
 	file, err := os.Create(buf.Filename)
 	if err != nil {
 		StatusLine(fmt.Sprintf(`Could not open file "%s" for writing: %s`, buf.Filename, err))
-		return
+		return err
 	}
 	defer file.Close()
 	for _, l := range buf.Lines {
 		file.Write(append(l, '\n'))
 	}
 	StatusLine(fmt.Sprintf(`[%s] %d lines written to disk`, buf.Filename, len(buf.Lines)))
+	return nil
+}
+
+func (buf *buffer) Close() {
+	buf.Closed = true
 }
 
 func (buf *buffer) CenterOnCursor() {
@@ -98,6 +104,7 @@ func newBuffer(filename string) *buffer {
 	lines := bytes.Split(data, []byte{'\n'})
 	if len(lines) > 1 {
 		lines = lines[:len(lines)-1]
+		StatusLine(fmt.Sprintf(`[%s] %d lines loaded`, filename, len(lines)))
 	}
 	buf.Lines = make([][]byte, len(lines))
 	for i, l := range lines {

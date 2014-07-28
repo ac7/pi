@@ -34,5 +34,5 @@ func drawStatusLine(buf *buffer) {
 		modeString = "edit"
 	}
 
-	puts(0, h-2, fmt.Sprintf(fmt.Sprintf("  %%-%ds%%s", w-14), _statusLine, modeString), termbox.ColorGreen, termbox.ColorBlack)
+	puts(2, h-2, fmt.Sprintf(fmt.Sprintf("%%-%ds%%s", w-14), _statusLine, modeString), termbox.ColorRed|termbox.AttrBold|termbox.AttrUnderline, termbox.ColorWhite)
 }

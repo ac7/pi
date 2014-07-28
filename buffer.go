@@ -56,10 +56,10 @@ func (buf *buffer) Update() {
 		line := buf.Lines[i]
 
 		// line number
-		puts(buf.XOffset-_LEFT_MARGIN, i-buf.Topline, fmt.Sprintf(fmt.Sprintf("%%%dd", _LEFT_MARGIN-1), i+1), termbox.ColorCyan, termbox.ColorBlack|termbox.AttrUnderline)
+		puts(buf.XOffset-_LEFT_MARGIN, i-buf.Topline, fmt.Sprintf(fmt.Sprintf("%%%dd", _LEFT_MARGIN-1), i+1), termbox.ColorCyan, termbox.ColorWhite)
 
 		// actual line
-		puts(buf.XOffset, i-buf.Topline, fmt.Sprintf("%s", line), termbox.ColorWhite, termbox.ColorBlack)
+		puts(buf.XOffset, i-buf.Topline, fmt.Sprintf("%s", line), termbox.ColorBlack, termbox.ColorWhite)
 	}
 }
 

@@ -7,9 +7,10 @@ import (
 )
 
 type cursor struct {
-	x, y int
-	mode mode
-	buf  *buffer
+	x, y      int
+	mode      mode
+	cutBuffer []byte
+	buf       *buffer
 }
 
 func (c *cursor) SetMode(mode mode) {
@@ -101,7 +102,7 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			c.buf.CenterOnCursor()
 
 		// save/quit
-		case 'W':
+		case 'w':
 			c.buf.Save()
 		case 'Z':
 			err := c.buf.Save()
@@ -125,6 +126,11 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			c.x = 0
 		case 'D':
 			c.DeleteLine()
+			c.y++
+		case 'p':
+			c.InsertLine()
+			c.buf.Lines[c.y] = make([]byte, len(c.cutBuffer))
+			copy(c.buf.Lines[c.y], c.cutBuffer)
 		case 'O':
 			c.y--
 			fallthrough
@@ -179,14 +185,18 @@ func (c *cursor) DeleteLine() {
 	if len(c.buf.Lines) < 2 {
 		return
 	}
+	c.cutBuffer = make([]byte, len(c.buf.Lines[c.y]))
+	copy(c.cutBuffer, c.buf.Lines[c.y])
 	c.buf.Lines = append(c.buf.Lines[:c.y], c.buf.Lines[c.y+1:]...)
 	c.y--
+	c.buf.ChangedSinceWrite = true
 }
 
 func (c *cursor) InsertLine() {
 	c.y++
 	c.buf.Lines = append(c.buf.Lines[:c.y], append([][]byte{[]byte{}}, c.buf.Lines[c.y:]...)...)
 	c.x = 0
+	c.buf.ChangedSinceWrite = true
 }
 
 func newCursor(buf *buffer) *cursor {

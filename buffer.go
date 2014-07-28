@@ -10,13 +10,14 @@ import (
 )
 
 type buffer struct {
-	Filename       string
-	Lines          [][]byte
-	LongestLineLen int
-	Cursor         *cursor
-	Topline        int
-	XOffset        int
-	Closed         bool
+	Filename          string
+	Lines             [][]byte
+	LongestLineLen    int
+	Cursor            *cursor
+	Topline           int
+	XOffset           int
+	Closed            bool
+	ChangedSinceWrite bool
 }
 
 func (buf *buffer) Width() int {
@@ -73,11 +74,16 @@ func (buf *buffer) Save() error {
 		file.Write(append(l, '\n'))
 	}
 	StatusLine(fmt.Sprintf(`[%s] %d lines written to disk`, buf.Filename, len(buf.Lines)))
+	buf.ChangedSinceWrite = false
 	return nil
 }
 
-func (buf *buffer) Close() {
+func (buf *buffer) Close() error {
+	if buf.ChangedSinceWrite {
+		return fmt.Errorf("Unsaved changes")
+	}
 	buf.Closed = true
+	return nil
 }
 
 func (buf *buffer) CenterOnCursor() {

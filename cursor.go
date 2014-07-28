@@ -12,6 +12,11 @@ type cursor struct {
 	buf  *buffer
 }
 
+func (c *cursor) SetMode(mode mode) {
+	c.mode = mode
+	c.buf.ChangedSinceWrite = true
+}
+
 func (c *cursor) Update() {
 	lines := c.buf.Lines
 
@@ -96,6 +101,8 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			c.buf.CenterOnCursor()
 
 		// save/quit
+		case 'W':
+			c.buf.Save()
 		case 'Z':
 			err := c.buf.Save()
 			if err == nil {
@@ -106,15 +113,15 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 
 		// make edits
 		case 'i':
-			c.mode = _MODE_EDIT
+			c.SetMode(_MODE_EDIT)
 		case 'a':
-			c.mode = _MODE_EDIT
+			c.SetMode(_MODE_EDIT)
 			c.x++
 		case 'A':
-			c.mode = _MODE_EDIT
+			c.SetMode(_MODE_EDIT)
 			c.x = len(c.buf.Lines[c.y])
 		case 'I':
-			c.mode = _MODE_EDIT
+			c.SetMode(_MODE_EDIT)
 			c.x = 0
 		case 'D':
 			c.DeleteLine()
@@ -123,7 +130,7 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			fallthrough
 		case 'o':
 			c.InsertLine()
-			c.mode = _MODE_EDIT
+			c.SetMode(_MODE_EDIT)
 		}
 	case _MODE_EDIT:
 		ch := event.Ch
@@ -139,10 +146,12 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 					copy(c.buf.Lines[c.y][c.x:], c.buf.Lines[c.y][c.x+1:])
 					c.buf.Lines[c.y][len(c.buf.Lines[c.y])-1] = 0
 					c.buf.Lines[c.y] = c.buf.Lines[c.y][:len(c.buf.Lines[c.y])-1]
+				} else {
+					c.DeleteLine()
 				}
 				return
 			case termbox.KeyCtrlC, termbox.KeyEsc:
-				c.mode = _MODE_NORMAL
+				c.SetMode(_MODE_NORMAL)
 				c.buf.findLongestLine()
 				return
 			case termbox.KeyEnter:
@@ -167,7 +176,7 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 }
 
 func (c *cursor) DeleteLine() {
-	if len(c.buf.Lines) < 1 {
+	if len(c.buf.Lines) < 2 {
 		return
 	}
 	c.buf.Lines = append(c.buf.Lines[:c.y], c.buf.Lines[c.y+1:]...)

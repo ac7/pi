@@ -9,12 +9,21 @@ import (
 
 var running = true
 
+var buffers []*buffer
+
 func quit() {
+	for _, buf := range buffers {
+		err := buf.Close()
+		if err != nil {
+			StatusLine(fmt.Sprintf("[%s] has unsaved changes", buf.Filename))
+			return
+		}
+	}
 	running = false
 }
 
 func main() {
-	buffers := []*buffer{}
+	buffers = []*buffer{}
 	bufferIndex := 0
 	for _, arg := range os.Args[1:] {
 		buffers = append(buffers, newBuffer(arg))
@@ -50,20 +59,24 @@ func main() {
 		termbox.Flush()
 
 		event := termbox.PollEvent()
-		switch event.Ch {
-		case '{':
-			bufferIndex--
-			if bufferIndex < 0 {
-				bufferIndex = len(buffers) - 1
+		if buf.Cursor.mode == _MODE_NORMAL {
+			switch event.Ch {
+			case '{':
+				bufferIndex--
+				if bufferIndex < 0 {
+					bufferIndex = len(buffers) - 1
+				}
+				StatusLine(fmt.Sprintf(`Switched backward to file [%s]`, buffers[bufferIndex].Filename))
+			case '}':
+				bufferIndex++
+				if bufferIndex >= len(buffers) {
+					bufferIndex = 0
+				}
+				StatusLine(fmt.Sprintf(`Switched forward to file [%s]`, buffers[bufferIndex].Filename))
+			default:
+				buf.Cursor.HandleEvent(event)
 			}
-			StatusLine(fmt.Sprintf(`Switched backward to file [%s]`, buffers[bufferIndex].Filename))
-		case '}':
-			bufferIndex++
-			if bufferIndex >= len(buffers) {
-				bufferIndex = 0
-			}
-			StatusLine(fmt.Sprintf(`Switched forward to file [%s]`, buffers[bufferIndex].Filename))
-		default:
+		} else {
 			buf.Cursor.HandleEvent(event)
 		}
 	}

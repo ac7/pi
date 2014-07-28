@@ -42,6 +42,21 @@ func main() {
 		termbox.Flush()
 
 		event := termbox.PollEvent()
-		buf.Cursor.HandleEvent(event)
+		switch event.Ch {
+		case '{':
+			bufferIndex--
+			if bufferIndex < 0 {
+				bufferIndex = len(buffers) - 1
+			}
+			StatusLine(fmt.Sprintf(`Switched backward to file [%s]`, buffers[bufferIndex].Filename))
+		case '}':
+			bufferIndex++
+			if bufferIndex >= len(buffers) {
+				bufferIndex = 0
+			}
+			StatusLine(fmt.Sprintf(`Switched forward to file [%s]`, buffers[bufferIndex].Filename))
+		default:
+			buf.Cursor.HandleEvent(event)
+		}
 	}
 }

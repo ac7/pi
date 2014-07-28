@@ -62,10 +62,11 @@ func (c *cursor) moveWord(forward bool) {
 }
 
 func (c *cursor) HandleEvent(event termbox.Event) {
+	// vi-ish keybindings
 	switch c.mode {
 	case _MODE_NORMAL, _MODE_SELECT:
 		switch event.Ch {
-		// vi-ish keybindings
+		// movement
 		case 'j':
 			c.y++
 		case 'k':
@@ -93,10 +94,14 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			c.y = len(c.buf.Lines)
 		case 'z':
 			c.buf.CenterOnCursor()
+
+		// save/quit
 		case 'Z':
 			c.buf.Save()
 		case 'Q':
 			quit()
+
+		// make edits
 		case 'i':
 			c.mode = _MODE_EDIT
 		case 'a':

@@ -34,14 +34,12 @@ func (c *cursor) Update() {
 
 	if c.x < 0 {
 		c.x = 0
+	} else if c.x > len(lines[c.y]) {
+		c.x = len(lines[c.y])
 	}
 
 	if _CENTER_EVERY_FRAME {
 		c.buf.Topline = c.y - c.buf.Height()/2
-	}
-
-	if c.x > len(lines[c.y]) {
-		c.x = len(lines[c.y])
 	}
 
 	tabCount := strings.Count(lines[c.y][:c.x], "\t")

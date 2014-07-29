@@ -39,30 +39,6 @@ func (buf *buffer) findLongestLine() {
 	}
 }
 
-// TODO: this is very inefficient!
-func (buf *buffer) Update() {
-	buf.XOffset = _LEFT_MARGIN
-	if _HORIZONTAL_CENTERING {
-		buf.XOffset = buf.Width()/2 - buf.LongestLineLen/2 - _LEFT_MARGIN
-	}
-	buf.Cursor.Update()
-	for i := buf.Topline; i < buf.Topline+buf.Height()-1; i++ {
-		if i < 0 {
-			continue
-		} else if i >= len(buf.Lines) {
-			break
-		}
-
-		line := buf.Lines[i]
-
-		// line number
-		puts(buf.XOffset-_LEFT_MARGIN, i-buf.Topline, fmt.Sprintf(fmt.Sprintf("%%%dd", _LEFT_MARGIN-1), i+1), termbox.ColorCyan, termbox.ColorWhite)
-
-		// actual line
-		puts(buf.XOffset, i-buf.Topline, fmt.Sprintf("%s", line), termbox.ColorBlack, termbox.ColorWhite)
-	}
-}
-
 func (buf *buffer) Save() error {
 	file, err := os.Create(buf.Filename)
 	if err != nil {

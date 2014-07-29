@@ -75,8 +75,8 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			c.y--
 			fallthrough
 		case 'o':
-			c.buf.InsertLine(c.y)
 			c.y++
+			c.buf.InsertLine(c.y)
 			c.SetMode(_MODE_EDIT)
 		}
 	case _MODE_EDIT:

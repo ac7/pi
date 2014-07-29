@@ -13,6 +13,10 @@ func (buf *buffer) Update() {
 		buf.XOffset = buf.Width()/2 - buf.LongestLineLen/2 - _LEFT_MARGIN
 	}
 	buf.Cursor.Update()
+	buf.Highlighting = make([][]termbox.Attribute, len(buf.Lines))
+	for i, line := range buf.Lines {
+		buf.Highlighting[i] = syntaxHighlight(line)
+	}
 	for i := buf.Topline; i < buf.Topline+buf.Height()-1; i++ {
 		if i < 0 {
 			continue
@@ -29,7 +33,7 @@ func (buf *buffer) Update() {
 		pos := 0
 		for x, c := range line {
 			termbox.SetCell(pos+buf.XOffset, i-buf.Topline, c,
-				termbox.ColorBlack, termbox.ColorWhite)
+				buf.Highlighting[i][x], termbox.ColorWhite)
 
 			if c == '\t' {
 				pos += _TAB_WIDTH

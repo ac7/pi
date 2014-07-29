@@ -12,6 +12,7 @@ import (
 type buffer struct {
 	Filename          string
 	Lines             []string
+	Highlighting      [][]termbox.Attribute
 	LongestLineLen    int
 	Cursor            *cursor
 	Topline           int

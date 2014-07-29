@@ -31,8 +31,10 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			c.moveWord(false)
 		case 'g':
 			c.y = 0
+			c.buf.CenterOnCursor()
 		case 'G':
 			c.y = len(c.buf.lines)
+			c.buf.CenterOnCursor()
 		case 'z':
 			c.buf.CenterOnCursor()
 
@@ -68,8 +70,8 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 				c.buf.SetLine(c.y, line[:c.x]+line[c.x+1:])
 			}
 		case 'p':
-			c.buf.InsertLine(c.y)
 			c.y++
+			c.buf.InsertLine(c.y)
 			c.buf.SetLine(c.y, c.cutBuffer)
 		case 'O':
 			c.y--

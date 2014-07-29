@@ -69,14 +69,14 @@ func (buf *buffer) CenterOnCursor() {
 }
 
 func (buf *buffer) Line(index int) string {
-	if index > 0 && index < len(buf.lines) {
+	if index >= 0 && index < len(buf.lines) {
 		return buf.lines[index]
 	}
 	return ""
 }
 
 func (buf *buffer) SetLine(index int, val string) {
-	if index > 0 && index < len(buf.lines) {
+	if index >= 0 && index < len(buf.lines) {
 		buf.lines[index] = val
 		buf.highlighting[index] = syntaxHighlight(val)
 		buf.ChangedSinceWrite = true

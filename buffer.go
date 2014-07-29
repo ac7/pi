@@ -11,8 +11,8 @@ import (
 
 type buffer struct {
 	Filename          string
-	Lines             []string
-	Highlighting      [][]termbox.Attribute
+	lines             []string
+	highlighting      [][]termbox.Attribute
 	LongestLineLen    int
 	Cursor            *cursor
 	Topline           int
@@ -33,7 +33,7 @@ func (buf *buffer) Height() int {
 
 func (buf *buffer) findLongestLine() {
 	buf.LongestLineLen = 0
-	for _, l := range buf.Lines {
+	for _, l := range buf.lines {
 		if len(l) > buf.LongestLineLen {
 			buf.LongestLineLen = len(l)
 		}
@@ -47,10 +47,10 @@ func (buf *buffer) Save() error {
 		return err
 	}
 	defer file.Close()
-	for _, l := range buf.Lines {
+	for _, l := range buf.lines {
 		file.WriteString(l + "\n")
 	}
-	StatusLine(fmt.Sprintf(`[%s] %d lines written to disk`, buf.Filename, len(buf.Lines)))
+	StatusLine(fmt.Sprintf(`[%s] %d lines written to disk`, buf.Filename, len(buf.lines)))
 	buf.ChangedSinceWrite = false
 	return nil
 }
@@ -65,6 +65,46 @@ func (buf *buffer) Close() error {
 
 func (buf *buffer) CenterOnCursor() {
 	buf.Topline = buf.Cursor.y - buf.Height()/2
+}
+
+func (buf *buffer) Line(index int) string {
+	if index > 0 && index < len(buf.lines) {
+		return buf.lines[index]
+	}
+	return ""
+}
+
+func (buf *buffer) SetLine(index int, val string) {
+	if index > 0 && index < len(buf.lines) {
+		buf.lines[index] = val
+		buf.highlighting[index] = syntaxHighlight(val)
+		buf.ChangedSinceWrite = true
+	}
+}
+
+func (buf *buffer) DeleteLine(index int) {
+	if index < 0 || index >= len(buf.lines) || len(buf.lines) <= 1 {
+		return
+	}
+	buf.lines = append(buf.lines[:index], buf.lines[index+1:]...)
+	buf.highlighting = append(buf.highlighting[:index], buf.highlighting[index+1:]...)
+	buf.ChangedSinceWrite = true
+}
+
+func (buf *buffer) InsertLine(index int) {
+	if index < 0 || index > len(buf.lines) {
+		return
+	}
+	buf.lines = append(buf.lines[:index], append([]string{""}, buf.lines[index:]...)...)
+	buf.highlighting = append(buf.highlighting[:index], append([][]termbox.Attribute{{}}, buf.highlighting[index:]...)...)
+	buf.ChangedSinceWrite = true
+}
+
+func (buf *buffer) highlightAll() {
+	buf.highlighting = make([][]termbox.Attribute, len(buf.lines))
+	for i, line := range buf.lines {
+		buf.highlighting[i] = syntaxHighlight(line)
+	}
 }
 
 func newBuffer(filename string) *buffer {
@@ -89,18 +129,22 @@ func newBuffer(filename string) *buffer {
 		lines = lines[:len(lines)-1]
 		StatusLine(fmt.Sprintf(`[%s] %d lines loaded`, filename, len(lines)))
 	}
-	buf.Lines = make([]string, len(lines))
+	buf.lines = make([]string, len(lines))
 	for i, l := range lines {
-		buf.Lines[i] = string(l)
+		buf.lines[i] = string(l)
 	}
 
 	buf.findLongestLine()
+	buf.highlightAll()
 	buf.Cursor = newCursor(buf)
 	return buf
 }
 
 func newEmptyBuffer() *buffer {
-	buf := &buffer{Lines: []string{""}}
+	buf := &buffer{
+		lines:        []string{""},
+		highlighting: [][]termbox.Attribute{{}},
+	}
 	buf.Cursor = newCursor(buf)
 	return buf
 }

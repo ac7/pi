@@ -15,8 +15,8 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 		case 'l':
 			c.x++
 		case 'h':
-			if c.x >= len(c.buf.Lines[c.y]) {
-				c.x = len(c.buf.Lines[c.y])
+			if c.x >= len(c.buf.Line(c.y)) {
+				c.x = len(c.buf.Line(c.y))
 			}
 			c.x--
 		case 'e':
@@ -25,14 +25,14 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			}
 			c.moveWord(true)
 		case 'b':
-			if c.x >= len(c.buf.Lines[c.y]) {
-				c.x = len(c.buf.Lines[c.y]) - 1
+			if c.x >= len(c.buf.Line(c.y)) {
+				c.x = len(c.buf.Line(c.y)) - 1
 			}
 			c.moveWord(false)
 		case 'g':
 			c.y = 0
 		case 'G':
-			c.y = len(c.buf.Lines)
+			c.y = len(c.buf.lines)
 		case 'z':
 			c.buf.CenterOnCursor()
 
@@ -55,20 +55,22 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			c.x++
 		case 'A':
 			c.SetMode(_MODE_EDIT)
-			c.x = len(c.buf.Lines[c.y])
+			c.x = len(c.buf.Line(c.y))
 		case 'I':
 			c.SetMode(_MODE_EDIT)
 			c.x = 0
 		case 'D':
+			c.cutBuffer = c.buf.Line(c.y)
 			c.DeleteLine()
 			c.y++
 		case 'x':
-			if c.x < len(c.buf.Lines[c.y]) {
-				c.buf.Lines[c.y] = c.buf.Lines[c.y][:c.x] + c.buf.Lines[c.y][c.x+1:]
+			line := c.buf.Line(c.y)
+			if c.x < len(line) {
+				c.buf.SetLine(c.y, line[:c.x]+line[c.x+1:])
 			}
 		case 'p':
 			c.InsertLine()
-			c.buf.Lines[c.y] = string(c.cutBuffer)
+			c.buf.SetLine(c.y, c.cutBuffer)
 		case 'O':
 			c.y--
 			fallthrough
@@ -87,7 +89,8 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			case termbox.KeyBackspace, termbox.KeyBackspace2:
 				if c.x > 0 {
 					c.x--
-					c.buf.Lines[c.y] = c.buf.Lines[c.y][:c.x] + c.buf.Lines[c.y][c.x+1:]
+					line := c.buf.Line(c.y)
+					c.buf.SetLine(c.y, line[:c.x]+line[c.x+1:])
 				} else if c.y > 0 {
 					c.DeleteLine()
 				}
@@ -105,11 +108,11 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 		}
 
 		// insert the byte into the middle of the line
-		if c.x == len(c.buf.Lines[c.y]) {
+		if c.x == len(c.buf.Line(c.y)) {
 			// shortcut case: when we're already at the end of the line
-			c.buf.Lines[c.y] = c.buf.Lines[c.y] + string(ch)
+			c.buf.SetLine(c.y, c.buf.Line(c.y)+string(ch))
 		} else {
-			c.buf.Lines[c.y] = c.buf.Lines[c.y][:c.x] + string(ch) + c.buf.Lines[c.y][c.x:]
+			c.buf.SetLine(c.y, c.buf.Line(c.y)[:c.x]+string(ch)+c.buf.Line(c.y)[c.x:])
 		}
 		c.x++
 	}

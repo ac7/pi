@@ -9,17 +9,16 @@ import (
 type cursor struct {
 	x, y      int
 	mode      mode
-	cutBuffer []byte
+	cutBuffer string
 	buf       *buffer
 }
 
 func (c *cursor) SetMode(mode mode) {
 	c.mode = mode
-	c.buf.ChangedSinceWrite = true
 }
 
 func (c *cursor) Update() {
-	lines := c.buf.Lines
+	lines := c.buf.lines
 
 	if c.y < 0 {
 		c.y = 0
@@ -41,17 +40,16 @@ func (c *cursor) Update() {
 		c.buf.Topline = c.y - c.buf.Height()/2
 	}
 
-	xPos := c.x
-	if xPos > len(lines[c.y]) {
-		xPos = len(lines[c.y])
+	if c.x > len(lines[c.y]) {
+		c.x = len(lines[c.y])
 	}
 
-	tabCount := strings.Count(lines[c.y][:xPos], "\t")
-	termbox.SetCursor(xPos+tabCount*(_TAB_WIDTH-1)+c.buf.XOffset, c.y-c.buf.Topline)
+	tabCount := strings.Count(lines[c.y][:c.x], "\t")
+	termbox.SetCursor(c.x+tabCount*(_TAB_WIDTH-1)+c.buf.XOffset, c.y-c.buf.Topline)
 }
 
 func (c *cursor) moveWord(forward bool) {
-	line := c.buf.Lines[c.y]
+	line := c.buf.Line(c.y)
 
 	var b byte
 	for b != ' ' && b != '.' && b != ')' && b != '(' && b != '\t' {
@@ -68,21 +66,14 @@ func (c *cursor) moveWord(forward bool) {
 }
 
 func (c *cursor) DeleteLine() {
-	if len(c.buf.Lines) < 2 {
-		return
-	}
-	c.cutBuffer = make([]byte, len(c.buf.Lines[c.y]))
-	copy(c.cutBuffer, c.buf.Lines[c.y])
-	c.buf.Lines = append(c.buf.Lines[:c.y], c.buf.Lines[c.y+1:]...)
+	c.buf.DeleteLine(c.y)
 	c.y--
-	c.buf.ChangedSinceWrite = true
 }
 
 func (c *cursor) InsertLine() {
 	c.y++
-	c.buf.Lines = append(c.buf.Lines[:c.y], append([]string{""}, c.buf.Lines[c.y:]...)...)
+	c.buf.InsertLine(c.y)
 	c.x = 0
-	c.buf.ChangedSinceWrite = true
 }
 
 func newCursor(buf *buffer) *cursor {

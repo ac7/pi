@@ -146,12 +146,13 @@ func newBufferFromFile(filename string) *buffer {
 }
 
 func newBufferFromStream(r io.Reader) *buffer {
-	buf := &buffer{Filename: "stdin"}
+	buf := &buffer{}
 	data, err := ioutil.ReadAll(r)
 	if err != nil {
 		buf.loadData([]byte("Could not load from stdin: " + err.Error()))
 	} else {
 		buf.loadData(data)
+		StatusLine(fmt.Sprintf("Read %d lines from stdin", len(buf.lines)))
 	}
 	buf.highlightAll()
 	buf.findLongestLine()

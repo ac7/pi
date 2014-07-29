@@ -25,8 +25,12 @@ func quit() {
 func main() {
 	buffers = []*buffer{}
 	bufferIndex := 0
-	for _, arg := range os.Args[1:] {
-		buffers = append(buffers, newBuffer(arg))
+	if len(os.Args) > 1 {
+		for _, arg := range os.Args[1:] {
+			buffers = append(buffers, newBufferFromFile(arg))
+		}
+	} else {
+		buffers = append(buffers, newBufferFromStream(os.Stdin))
 	}
 
 	err := termbox.Init()

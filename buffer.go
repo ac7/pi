@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 
@@ -107,7 +108,21 @@ func (buf *buffer) highlightAll() {
 	}
 }
 
-func newBuffer(filename string) *buffer {
+func (buf *buffer) loadData(data []byte) {
+	// we have to do this complicated split, allocate, and copy because otherwise the
+	// slices bleed into each other when you edit
+	lines := bytes.Split(data, []byte{'\n'})
+	if len(lines) > 1 {
+		lines = lines[:len(lines)-1]
+		StatusLine(fmt.Sprintf(`[%s] %d lines loaded`, buf.Filename, len(lines)))
+	}
+	buf.lines = make([]string, len(lines))
+	for i, l := range lines {
+		buf.lines[i] = string(l)
+	}
+}
+
+func newBufferFromFile(filename string) *buffer {
 	var data []byte
 	file, err := os.Open(filename)
 	if err != nil {
@@ -122,20 +137,25 @@ func newBuffer(filename string) *buffer {
 	}
 	buf := &buffer{Filename: filename}
 
-	// we have to do this complicated split, allocate, and copy because otherwise the
-	// slices bleed into each other when you edit
-	lines := bytes.Split(data, []byte{'\n'})
-	if len(lines) > 1 {
-		lines = lines[:len(lines)-1]
-		StatusLine(fmt.Sprintf(`[%s] %d lines loaded`, filename, len(lines)))
-	}
-	buf.lines = make([]string, len(lines))
-	for i, l := range lines {
-		buf.lines[i] = string(l)
-	}
-
-	buf.findLongestLine()
+	buf.loadData(data)
 	buf.highlightAll()
+	buf.findLongestLine()
+
+	buf.Cursor = newCursor(buf)
+	return buf
+}
+
+func newBufferFromStream(r io.Reader) *buffer {
+	buf := &buffer{Filename: "stdin"}
+	data, err := ioutil.ReadAll(r)
+	if err != nil {
+		buf.loadData([]byte("Could not load from stdin: " + err.Error()))
+	} else {
+		buf.loadData(data)
+	}
+	buf.highlightAll()
+	buf.findLongestLine()
+
 	buf.Cursor = newCursor(buf)
 	return buf
 }

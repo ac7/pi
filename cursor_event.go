@@ -62,6 +62,10 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 		case 'D':
 			c.DeleteLine()
 			c.y++
+		case 'x':
+			if c.x < len(c.buf.Lines[c.y]) {
+				c.buf.Lines[c.y] = c.buf.Lines[c.y][:c.x] + c.buf.Lines[c.y][c.x+1:]
+			}
 		case 'p':
 			c.InsertLine()
 			c.buf.Lines[c.y] = string(c.cutBuffer)

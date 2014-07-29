@@ -109,7 +109,7 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			// shortcut case: when we're already at the end of the line
 			c.buf.Lines[c.y] = c.buf.Lines[c.y] + string(ch)
 		} else {
-			c.buf.Lines[c.y] = c.buf.Lines[c.y][c.x-1:] + string(ch) + c.buf.Lines[c.y][:c.x]
+			c.buf.Lines[c.y] = c.buf.Lines[c.y][:c.x] + string(ch) + c.buf.Lines[c.y][c.x:]
 		}
 		c.x++
 	}

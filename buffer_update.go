@@ -13,6 +13,9 @@ func (buf *buffer) Update() {
 		buf.XOffset = buf.Width()/2 - buf.LongestLineLen/2 - _LEFT_MARGIN
 	}
 	buf.Cursor.Update()
+
+	// FIXME: this is the least efficient way to do syntax highlighting that I have ever
+	// seen
 	buf.Highlighting = make([][]termbox.Attribute, len(buf.Lines))
 	for i, line := range buf.Lines {
 		buf.Highlighting[i] = syntaxHighlight(line)

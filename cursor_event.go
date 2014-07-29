@@ -44,7 +44,7 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			if err == nil {
 				c.buf.Close()
 			}
-		case 'Q':
+		case 'q':
 			quit()
 
 		// make edits

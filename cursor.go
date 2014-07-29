@@ -65,17 +65,6 @@ func (c *cursor) moveWord(forward bool) {
 	}
 }
 
-func (c *cursor) DeleteLine() {
-	c.buf.DeleteLine(c.y)
-	c.y--
-}
-
-func (c *cursor) InsertLine() {
-	c.y++
-	c.buf.InsertLine(c.y)
-	c.x = 0
-}
-
 func newCursor(buf *buffer) *cursor {
 	return &cursor{
 		x:    0,

@@ -61,21 +61,22 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			c.x = 0
 		case 'D':
 			c.cutBuffer = c.buf.Line(c.y)
-			c.DeleteLine()
-			c.y++
+			c.buf.DeleteLine(c.y)
 		case 'x':
 			line := c.buf.Line(c.y)
 			if c.x < len(line) {
 				c.buf.SetLine(c.y, line[:c.x]+line[c.x+1:])
 			}
 		case 'p':
-			c.InsertLine()
+			c.buf.InsertLine(c.y)
+			c.y++
 			c.buf.SetLine(c.y, c.cutBuffer)
 		case 'O':
 			c.y--
 			fallthrough
 		case 'o':
-			c.InsertLine()
+			c.buf.InsertLine(c.y)
+			c.y++
 			c.SetMode(_MODE_EDIT)
 		}
 	case _MODE_EDIT:
@@ -87,12 +88,16 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			case termbox.KeyTab:
 				ch = '\t'
 			case termbox.KeyBackspace, termbox.KeyBackspace2:
+				line := c.buf.Line(c.y)
 				if c.x > 0 {
 					c.x--
-					line := c.buf.Line(c.y)
 					c.buf.SetLine(c.y, line[:c.x]+line[c.x+1:])
 				} else if c.y > 0 {
-					c.DeleteLine()
+					c.buf.DeleteLine(c.y)
+					c.y--
+					aboveLine := c.buf.Line(c.y)
+					c.buf.SetLine(c.y, c.buf.Line(c.y)+line)
+					c.x = len(aboveLine)
 				}
 				return
 			case termbox.KeyCtrlC, termbox.KeyEsc:
@@ -100,7 +105,12 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 				c.buf.findLongestLine()
 				return
 			case termbox.KeyEnter:
-				c.InsertLine()
+				line := c.buf.Line(c.y)
+				c.buf.InsertLine(c.y)
+				c.buf.SetLine(c.y, line[:c.x])
+				c.y++
+				c.buf.SetLine(c.y, line[c.x:])
+				c.x = 0
 				return
 			default:
 				return

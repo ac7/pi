@@ -15,6 +15,11 @@ var Quit func()
 
 // Represents a buffer in memory editable by a cursor
 type IBuffer interface {
+	IViewport
+
+	// Each buffer has a cursor
+	Cursor() ICursor
+
 	// Get a line at an index. Return an empty string when index is out of range.
 	Line(index int) string
 	// Set a line at an index. A no-op when index is out of range.
@@ -23,31 +28,33 @@ type IBuffer interface {
 	InsertLine(int)
 	DeleteLine(int)
 
-	// The index of the top-most line that's drawn. If the user has scrolled the buffer
-	// so that line 32 is shown on the topmost line of their terminal, that's what
-	// Topline() would return.
-	TopEdge() int
-	LeftEdge() int
 	// Return the number of lines in the buffer
 	Len() int
+	Filename() string
+
+	Update()
+
+	Save() error
+	Close() error
+	Closed() bool
+}
+
+type IViewport interface {
 	// Width does not refer to the size of the buffer, only the size of the buffer
 	// on the user's screen.
 	Width() int
 	// See the description for Width()
 	Height() int
-	Filename() string
 
-	SetTopEdge(int)
-
-	Update()
 	ForceRedraw()
-
 	CenterOnLine(int)
-	Save() error
-	Close() error
-	Closed() bool
 
-	Cursor() ICursor
+	// The index of the top-most line that's drawn. If the user has scrolled the buffer
+	// so that line 32 is shown on the topmost line of their terminal, that's what
+	// Topline() would return.
+	TopEdge() int
+	LeftEdge() int
+	SetTopEdge(int)
 }
 
 type ICursor interface {

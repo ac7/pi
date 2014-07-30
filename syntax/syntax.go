@@ -8,60 +8,56 @@ import (
 	"github.com/ac7/pi"
 )
 
-var tokens = []struct {
-	literal string
-	attr    termbox.Attribute
-}{
-	{"package", termbox.ColorBlue},
-	{"for", termbox.ColorBlue},
-	{"len", termbox.ColorBlue},
-	{"return", termbox.ColorBlue},
-	{"copy", termbox.ColorBlue},
-	{"make", termbox.ColorBlue},
-	{"new", termbox.ColorBlue},
+var tokens = map[string]termbox.Attribute{
+	"copy":    termbox.ColorBlue,
+	"for":     termbox.ColorBlue,
+	"len":     termbox.ColorBlue,
+	"package": termbox.ColorBlue,
+	"return":  termbox.ColorBlue,
 
-	{"var", termbox.ColorBlue},
-	{":=", termbox.ColorBlue},
-	{"func", termbox.ColorBlue},
-	{"struct", termbox.ColorBlue},
+	":=":     termbox.ColorGreen,
+	"func":   termbox.ColorGreen,
+	"make":   termbox.ColorGreen,
+	"new":    termbox.ColorGreen,
+	"struct": termbox.ColorGreen,
+	"var":    termbox.ColorGreen,
 
-	{"true", termbox.ColorRed},
-	{"false", termbox.ColorRed},
+	"false": termbox.ColorRed,
+	"true":  termbox.ColorRed,
 
-	{"string", termbox.ColorMagenta},
-	{"int", termbox.ColorMagenta},
-	{"byte", termbox.ColorMagenta},
-	{"error", termbox.ColorMagenta},
+	"bool":   termbox.ColorMagenta,
+	"byte":   termbox.ColorMagenta,
+	"error":  termbox.ColorMagenta,
+	"int":    termbox.ColorMagenta,
+	"string": termbox.ColorMagenta,
 }
 
 func Highlighting(line string) []termbox.Attribute {
-	attr := make([]termbox.Attribute, len(line))
-	for i := range attr {
-		attr[i] = termbox.ColorDefault
+	attributes := make([]termbox.Attribute, len(line))
+	for i := range attributes {
+		attributes[i] = termbox.ColorDefault
 	}
-
 	if !pi.SYNTAX_HIGHLIGHTING {
-		return attr
+		return attributes
 	}
 
-	cutoff := 0
-	for _, token := range tokens {
-		index := 0
+	for literal, attribute := range tokens {
+		line := line
+		cutoff := 0
 		for {
-			index = strings.Index(line, token.literal)
+			index := strings.Index(line, literal)
 			if index < 0 {
 				break
 			}
 
 			cutoff += index
-			line = line[index+len(token.literal):]
-
-			for i := range token.literal {
-				attr[i+cutoff] = token.attr
+			line = line[index+len(literal):]
+			for i := range literal {
+				attributes[i+cutoff] = attribute
 			}
-			cutoff += len(token.literal)
+			cutoff += len(literal)
 		}
 	}
 
-	return attr
+	return attributes
 }

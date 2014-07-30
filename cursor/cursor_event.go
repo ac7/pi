@@ -75,7 +75,7 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 		case 'I':
 			c.setMode(pi.MODE_EDIT)
 			c.x = 0
-		case 'D':
+		case 'd':
 			c.cutBuffer = c.buf.Line(c.y)
 			c.buf.DeleteLine(c.y)
 		case 'x':

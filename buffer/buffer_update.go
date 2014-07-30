@@ -9,7 +9,11 @@ import (
 
 func (buf *buffer) Update() {
 	if pi.HORIZONTAL_CENTERING {
+		oldLeftEdge := buf.leftEdge
 		buf.leftEdge = buf.Width()/2 - buf.longestLineLen/2 - pi.LEFT_MARGIN
+		if oldLeftEdge != buf.leftEdge {
+			buf.ForceRedraw()
+		}
 	} else {
 		buf.leftEdge = pi.LEFT_MARGIN
 	}

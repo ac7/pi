@@ -5,32 +5,37 @@ import (
 	"os"
 
 	"github.com/nsf/termbox-go"
+
+	"github.com/ac7/pi"
+	"github.com/ac7/pi/buffer"
+	"github.com/ac7/pi/status"
 )
 
 var running = true
+var buffers []pi.IBuffer
 
-var buffers []*buffer
-
-func quit() {
-	for _, buf := range buffers {
-		err := buf.Close()
-		if err != nil {
-			StatusLine(fmt.Sprintf("[%s] has unsaved changes", buf.Filename))
-			return
+func init() {
+	pi.Quit = func() {
+		for _, buf := range buffers {
+			err := buf.Close()
+			if err != nil {
+				status.Set(fmt.Sprintf("[%s] has unsaved changes", buf.Filename()))
+				return
+			}
 		}
+		running = false
 	}
-	running = false
 }
 
 func main() {
-	buffers = []*buffer{}
+	buffers = []pi.IBuffer{}
 	bufferIndex := 0
 	if len(os.Args) > 1 {
 		for _, arg := range os.Args[1:] {
-			buffers = append(buffers, newBufferFromFile(arg))
+			buffers = append(buffers, buffer.NewFromFile(arg))
 		}
 	} else {
-		buffers = append(buffers, newBufferFromStream(os.Stdin))
+		buffers = append(buffers, buffer.NewFromStream(os.Stdin))
 	}
 
 	err := termbox.Init()
@@ -41,14 +46,14 @@ func main() {
 
 	for running {
 		if len(buffers) == 0 {
-			buffers = []*buffer{
-				newEmptyBuffer(),
+			buffers = []pi.IBuffer{
+				buffer.NewEmpty(),
 			}
 			bufferIndex = 0
 		}
 
 		buf := buffers[bufferIndex]
-		if buf.Closed {
+		if buf.Closed() {
 			buffers = buffers[:bufferIndex+copy(buffers[bufferIndex:], buffers[bufferIndex+1:])]
 			bufferIndex--
 			if bufferIndex < 0 {
@@ -58,7 +63,7 @@ func main() {
 		}
 
 		buf.Update()
-		drawStatusLine(buf)
+		status.Draw(buf)
 		termbox.Flush()
 
 		event := termbox.PollEvent()
@@ -66,25 +71,25 @@ func main() {
 			running = false
 			break
 		}
-		if buf.Cursor.mode == _MODE_NORMAL {
+		if buf.Cursor().Mode() == pi.MODE_NORMAL {
 			switch event.Ch {
 			case '{':
 				bufferIndex--
 				if bufferIndex < 0 {
 					bufferIndex = len(buffers) - 1
 				}
-				StatusLine(fmt.Sprintf(`Switched backward to file [%s]`, buffers[bufferIndex].Filename))
+				status.Set(fmt.Sprintf(`Switched backward to file [%s]`, buffers[bufferIndex].Filename))
 			case '}':
 				bufferIndex++
 				if bufferIndex >= len(buffers) {
 					bufferIndex = 0
 				}
-				StatusLine(fmt.Sprintf(`Switched forward to file [%s]`, buffers[bufferIndex].Filename))
+				status.Set(fmt.Sprintf(`Switched forward to file [%s]`, buffers[bufferIndex].Filename))
 			default:
-				buf.Cursor.HandleEvent(event)
+				buf.Cursor().HandleEvent(event)
 			}
 		} else {
-			buf.Cursor.HandleEvent(event)
+			buf.Cursor().HandleEvent(event)
 		}
 	}
 }

@@ -1,13 +1,16 @@
-package main
+package cursor
 
-import "github.com/nsf/termbox-go"
+import (
+	"github.com/ac7/pi"
+	"github.com/nsf/termbox-go"
+)
 
 func (c *cursor) HandleEvent(event termbox.Event) {
 	// vi-ish keybindings
 	switch c.mode {
-	case _MODE_NORMAL, _MODE_SELECT:
+	case pi.MODE_NORMAL, pi.MODE_SELECT:
 		if event.Key == termbox.KeyCtrlL {
-			c.buf.Redraw()
+			c.buf.ForceRedraw()
 			return
 		}
 		switch event.Ch {
@@ -35,12 +38,12 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 			c.moveWord(false)
 		case 'g':
 			c.y = 0
-			c.buf.CenterOnCursor()
+			c.buf.CenterOnLine(c.y)
 		case 'G':
-			c.y = len(c.buf.lines)
-			c.buf.CenterOnCursor()
+			c.y = c.buf.Len()
+			c.buf.CenterOnLine(c.y)
 		case 'z':
-			c.buf.CenterOnCursor()
+			c.buf.CenterOnLine(c.y)
 
 		// save/quit
 		case 'w':
@@ -51,19 +54,19 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 				c.buf.Close()
 			}
 		case 'q':
-			quit()
+			pi.Quit()
 
 		// make edits
 		case 'i':
-			c.SetMode(_MODE_EDIT)
+			c.setMode(pi.MODE_EDIT)
 		case 'a':
-			c.SetMode(_MODE_EDIT)
+			c.setMode(pi.MODE_EDIT)
 			c.x++
 		case 'A':
-			c.SetMode(_MODE_EDIT)
+			c.setMode(pi.MODE_EDIT)
 			c.x = len(c.buf.Line(c.y))
 		case 'I':
-			c.SetMode(_MODE_EDIT)
+			c.setMode(pi.MODE_EDIT)
 			c.x = 0
 		case 'D':
 			c.cutBuffer = c.buf.Line(c.y)
@@ -83,9 +86,9 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 		case 'o':
 			c.y++
 			c.buf.InsertLine(c.y)
-			c.SetMode(_MODE_EDIT)
+			c.setMode(pi.MODE_EDIT)
 		}
-	case _MODE_EDIT:
+	case pi.MODE_EDIT:
 		ch := event.Ch
 		if event.Key != 0 {
 			switch event.Key {
@@ -107,8 +110,7 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 				}
 				return
 			case termbox.KeyCtrlC, termbox.KeyEsc:
-				c.SetMode(_MODE_NORMAL)
-				c.buf.findLongestLine()
+				c.setMode(pi.MODE_NORMAL)
 				return
 			case termbox.KeyEnter:
 				line := c.buf.Line(c.y)

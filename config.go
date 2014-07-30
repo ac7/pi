@@ -1,9 +1,9 @@
-package main
+package pi
 
 const (
-	_LEFT_MARGIN          = 4
-	_TAB_WIDTH            = 8
-	_CENTER_EVERY_FRAME   = false
-	_HORIZONTAL_CENTERING = true
-	_SYNTAX_HIGHLIGHTING  = true
+	LEFT_MARGIN          = 4
+	TAB_WIDTH            = 8
+	CENTER_EVERY_FRAME   = false
+	HORIZONTAL_CENTERING = true
+	SYNTAX_HIGHLIGHTING  = true
 )

@@ -1,9 +1,11 @@
-package main
+package syntax
 
 import (
 	"strings"
 
 	"github.com/nsf/termbox-go"
+
+	"github.com/ac7/pi"
 )
 
 var tokens = []struct {
@@ -32,13 +34,13 @@ var tokens = []struct {
 	{"error", termbox.ColorMagenta},
 }
 
-func syntaxHighlight(line string) []termbox.Attribute {
+func Highlighting(line string) []termbox.Attribute {
 	attr := make([]termbox.Attribute, len(line))
 	for i := range attr {
 		attr[i] = termbox.ColorDefault
 	}
 
-	if !_SYNTAX_HIGHLIGHTING {
+	if !pi.SYNTAX_HIGHLIGHTING {
 		return attr
 	}
 

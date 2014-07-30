@@ -57,7 +57,6 @@ func main() {
 			continue
 		}
 
-		termbox.Clear(termbox.ColorBlack, termbox.ColorWhite)
 		buf.Update()
 		drawStatusLine(buf)
 		termbox.Flush()

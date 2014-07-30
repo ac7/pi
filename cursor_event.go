@@ -6,6 +6,10 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 	// vi-ish keybindings
 	switch c.mode {
 	case _MODE_NORMAL, _MODE_SELECT:
+		if event.Key == termbox.KeyCtrlL {
+			c.buf.Redraw()
+			return
+		}
 		switch event.Ch {
 		// movement
 		case 'j':

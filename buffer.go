@@ -16,7 +16,7 @@ type buffer struct {
 	highlighting      [][]termbox.Attribute
 	LongestLineLen    int
 	Cursor            *cursor
-	Topline           int
+	topline           int
 	XOffset           int
 	Closed            bool
 	ChangedSinceWrite bool
@@ -39,6 +39,15 @@ func (buf *buffer) findLongestLine() {
 			buf.LongestLineLen = len(l)
 		}
 	}
+}
+
+func (buf *buffer) Topline() int {
+	return buf.topline
+}
+
+func (buf *buffer) SetTopline(line int) {
+	buf.topline = line
+	buf.Redraw()
 }
 
 func (buf *buffer) Save() error {
@@ -65,7 +74,7 @@ func (buf *buffer) Close() error {
 }
 
 func (buf *buffer) CenterOnCursor() {
-	buf.Topline = buf.Cursor.y - buf.Height()/2
+	buf.SetTopline(buf.Cursor.y - buf.Height()/2)
 }
 
 func (buf *buffer) Line(index int) string {
@@ -80,6 +89,7 @@ func (buf *buffer) SetLine(index int, val string) {
 		buf.lines[index] = val
 		buf.highlighting[index] = syntaxHighlight(val)
 		buf.ChangedSinceWrite = true
+		buf.DrawLine(index)
 	}
 }
 
@@ -89,6 +99,7 @@ func (buf *buffer) DeleteLine(index int) {
 	}
 	buf.lines = append(buf.lines[:index], buf.lines[index+1:]...)
 	buf.highlighting = append(buf.highlighting[:index], buf.highlighting[index+1:]...)
+	buf.Redraw()
 	buf.ChangedSinceWrite = true
 }
 
@@ -98,6 +109,7 @@ func (buf *buffer) InsertLine(index int) {
 	}
 	buf.lines = append(buf.lines[:index], append([]string{""}, buf.lines[index:]...)...)
 	buf.highlighting = append(buf.highlighting[:index], append([][]termbox.Attribute{{}}, buf.highlighting[index:]...)...)
+	buf.Redraw()
 	buf.ChangedSinceWrite = true
 }
 

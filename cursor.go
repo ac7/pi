@@ -26,10 +26,10 @@ func (c *cursor) Update() {
 		c.y = len(lines) - 1
 	}
 
-	if c.y < c.buf.Topline {
-		c.buf.Topline -= 8
-	} else if c.y >= c.buf.Topline+c.buf.Height() {
-		c.buf.Topline += 8
+	if c.y < c.buf.Topline() {
+		c.buf.SetTopline(c.buf.Topline() - 8)
+	} else if c.y >= c.buf.Topline()+c.buf.Height() {
+		c.buf.SetTopline(c.buf.Topline() + 8)
 	}
 
 	if c.x < 0 {
@@ -39,11 +39,11 @@ func (c *cursor) Update() {
 	}
 
 	if _CENTER_EVERY_FRAME {
-		c.buf.Topline = c.y - c.buf.Height()/2
+		c.buf.SetTopline(c.y - c.buf.Height()/2)
 	}
 
 	tabCount := strings.Count(lines[c.y][:c.x], "\t")
-	termbox.SetCursor(c.x+tabCount*(_TAB_WIDTH-1)+c.buf.XOffset, c.y-c.buf.Topline)
+	termbox.SetCursor(c.x+tabCount*(_TAB_WIDTH-1)+c.buf.XOffset, c.y-c.buf.Topline())
 }
 
 func (c *cursor) moveWord(forward bool) {

@@ -19,7 +19,7 @@ var tokens = []struct {
 	{"new", termbox.ColorBlue},
 
 	{"var", termbox.ColorBlue},
-	{":=", termbox.ColorBlue | termbox.AttrBold},
+	{":=", termbox.ColorBlue},
 	{"func", termbox.ColorBlue},
 	{"struct", termbox.ColorBlue},
 
@@ -36,6 +36,10 @@ func syntaxHighlight(line string) []termbox.Attribute {
 	attr := make([]termbox.Attribute, len(line))
 	for i := range attr {
 		attr[i] = termbox.ColorDefault
+	}
+
+	if !_SYNTAX_HIGHLIGHTING {
+		return attr
 	}
 
 	cutoff := 0

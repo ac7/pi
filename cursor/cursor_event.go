@@ -6,6 +6,13 @@ import (
 )
 
 func (c *cursor) HandleEvent(event termbox.Event) {
+	if event.Type == termbox.EventResize {
+		c.buf.ForceRedraw()
+		return
+	} else if event.Type != termbox.EventKey {
+		return
+	}
+
 	// vi-ish keybindings
 	switch c.mode {
 	case pi.MODE_NORMAL, pi.MODE_SELECT:

@@ -7,11 +7,10 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/nsf/termbox-go"
-
 	"github.com/ac7/pi"
 	"github.com/ac7/pi/cursor"
 	"github.com/ac7/pi/status"
+	"github.com/nsf/termbox-go"
 )
 
 func (buf *buffer) loadData(data []byte) {

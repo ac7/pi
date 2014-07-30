@@ -3,9 +3,8 @@ package cursor
 import (
 	"strings"
 
-	"github.com/nsf/termbox-go"
-
 	"github.com/ac7/pi"
+	"github.com/nsf/termbox-go"
 )
 
 type cursor struct {

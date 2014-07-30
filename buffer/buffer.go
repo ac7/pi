@@ -2,14 +2,12 @@ package buffer
 
 import (
 	"fmt"
-
 	"os"
-
-	"github.com/nsf/termbox-go"
 
 	"github.com/ac7/pi"
 	"github.com/ac7/pi/status"
 	"github.com/ac7/pi/syntax"
+	"github.com/nsf/termbox-go"
 )
 
 type buffer struct {
@@ -43,6 +41,7 @@ func (buf *buffer) findLongestLine() {
 	}
 }
 
+// getter methods
 func (buf *buffer) Len() int         { return len(buf.lines) }
 func (buf *buffer) TopEdge() int     { return buf.topEdge }
 func (buf *buffer) LeftEdge() int    { return buf.leftEdge }

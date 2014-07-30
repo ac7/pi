@@ -9,27 +9,59 @@ import (
 )
 
 var tokens = map[string]termbox.Attribute{
-	"copy":    termbox.ColorBlue,
-	"for":     termbox.ColorBlue,
-	"len":     termbox.ColorBlue,
-	"package": termbox.ColorBlue,
-	"return":  termbox.ColorBlue,
+	// keywords
+	"break":       termbox.ColorBlue,
+	"case":        termbox.ColorBlue,
+	"continue":    termbox.ColorBlue,
+	"copy":        termbox.ColorBlue,
+	"defer":       termbox.ColorBlue,
+	"else":        termbox.ColorBlue,
+	"fallthrough": termbox.ColorBlue,
+	"for":         termbox.ColorBlue,
+	"func":        termbox.ColorBlue,
+	"if":          termbox.ColorBlue,
+	"import":      termbox.ColorBlue,
+	"interface":   termbox.ColorBlue,
+	"len":         termbox.ColorBlue,
+	"package":     termbox.ColorBlue,
+	"return":      termbox.ColorBlue,
+	"struct":      termbox.ColorBlue,
+	"switch":      termbox.ColorBlue,
+	"type":        termbox.ColorBlue,
 
-	":=":     termbox.ColorGreen,
-	"func":   termbox.ColorGreen,
-	"make":   termbox.ColorGreen,
-	"new":    termbox.ColorGreen,
-	"struct": termbox.ColorGreen,
-	"var":    termbox.ColorGreen,
+	// anything related to variable allocation
+	":=":   termbox.ColorGreen,
+	"[]":   termbox.ColorGreen,
+	"make": termbox.ColorGreen,
+	"new":  termbox.ColorGreen,
+	"var":  termbox.ColorGreen,
 
-	"false": termbox.ColorRed,
-	"true":  termbox.ColorRed,
+	// literals
+	"false": termbox.ColorCyan,
+	"true":  termbox.ColorCyan,
+	"0":     termbox.ColorCyan,
+	"1":     termbox.ColorCyan,
+	"2":     termbox.ColorCyan,
+	"3":     termbox.ColorCyan,
+	"4":     termbox.ColorCyan,
+	"5":     termbox.ColorCyan,
+	"6":     termbox.ColorCyan,
+	"7":     termbox.ColorCyan,
+	"8":     termbox.ColorCyan,
+	"9":     termbox.ColorCyan,
 
+	// types
 	"bool":   termbox.ColorMagenta,
 	"byte":   termbox.ColorMagenta,
 	"error":  termbox.ColorMagenta,
 	"int":    termbox.ColorMagenta,
+	"map":    termbox.ColorMagenta,
+	"rune":   termbox.ColorMagenta,
 	"string": termbox.ColorMagenta,
+
+	// common variable names
+	"err": termbox.ColorRed,
+	"ok":  termbox.ColorRed,
 }
 
 func Highlighting(line string) []termbox.Attribute {

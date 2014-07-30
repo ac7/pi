@@ -32,10 +32,10 @@ func TestHighlighting(t *testing.T) {
 		termbox.ColorDefault,
 
 		// true
-		termbox.ColorRed,
-		termbox.ColorRed,
-		termbox.ColorRed,
-		termbox.ColorRed,
+		termbox.ColorCyan,
+		termbox.ColorCyan,
+		termbox.ColorCyan,
+		termbox.ColorCyan,
 	}
 
 	attributes := Highlighting(input)

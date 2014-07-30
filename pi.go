@@ -67,3 +67,11 @@ func Puts(x, y int, str string, fg, bg termbox.Attribute) {
 		termbox.SetCell(x+pos, y, b, fg, bg)
 	}
 }
+
+const (
+	LEFT_MARGIN          = 4
+	TAB_WIDTH            = 8
+	CENTER_EVERY_FRAME   = false
+	HORIZONTAL_CENTERING = true
+	SYNTAX_HIGHLIGHTING  = true
+)

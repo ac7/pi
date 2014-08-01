@@ -72,6 +72,14 @@ func Highlighting(line string) []termbox.Attribute {
 		return attributes
 	}
 
+	comment := strings.Index(line, "//")
+	if comment != -1 {
+		for i := comment; i < len(line); i++ {
+			attributes[i] = termbox.ColorYellow
+		}
+		line = line[:comment]
+	}
+
 	for literal, attribute := range tokens {
 		line := line
 		cutoff := 0

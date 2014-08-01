@@ -44,3 +44,36 @@ func TestHighlighting(t *testing.T) {
 			attributes, expected)
 	}
 }
+
+func TestComment(t *testing.T) {
+	input := "x = true // hi"
+	expected := []termbox.Attribute{
+		// x
+		termbox.ColorDefault,
+		termbox.ColorDefault,
+
+		// =
+		termbox.ColorDefault,
+		termbox.ColorDefault,
+
+		// true
+		termbox.ColorCyan,
+		termbox.ColorCyan,
+		termbox.ColorCyan,
+		termbox.ColorCyan,
+		termbox.ColorDefault,
+
+		// comment
+		termbox.ColorYellow,
+		termbox.ColorYellow,
+		termbox.ColorYellow,
+		termbox.ColorYellow,
+		termbox.ColorYellow,
+	}
+
+	attributes := Highlighting(input)
+	if !reflect.DeepEqual(expected, attributes) {
+		t.Errorf("Unexpected syntax highlighting\nRecieved: %v\nExpected: %v",
+			attributes, expected)
+	}
+}

@@ -18,6 +18,7 @@ func (buf *buffer) Update() {
 		buf.leftEdge = pi.LEFT_MARGIN
 	}
 	buf.cursor.Update()
+	buf.ForceRedraw()
 }
 
 func (buf *buffer) ForceRedraw() {

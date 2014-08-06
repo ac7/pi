@@ -38,6 +38,7 @@ var tokens = map[string]termbox.Attribute{
 	// literals
 	"false": termbox.ColorCyan,
 	"true":  termbox.ColorCyan,
+	"nil":   termbox.ColorCyan,
 	"0":     termbox.ColorCyan,
 	"1":     termbox.ColorCyan,
 	"2":     termbox.ColorCyan,

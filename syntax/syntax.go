@@ -29,11 +29,12 @@ var tokens = map[string]termbox.Attribute{
 	"type":        termbox.ColorBlue,
 
 	// anything related to variable allocation
-	":=":   termbox.ColorGreen,
-	"[]":   termbox.ColorGreen,
-	"make": termbox.ColorGreen,
-	"new":  termbox.ColorGreen,
-	"var":  termbox.ColorGreen,
+	":=":    termbox.ColorGreen,
+	"[]":    termbox.ColorGreen,
+	"make":  termbox.ColorGreen,
+	"new":   termbox.ColorGreen,
+	"var":   termbox.ColorGreen,
+	"const": termbox.ColorGreen,
 
 	// literals
 	"false": termbox.ColorCyan,

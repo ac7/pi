@@ -79,6 +79,6 @@ const (
 	LEFT_MARGIN          = 4
 	TAB_WIDTH            = 8
 	CENTER_EVERY_FRAME   = false
-	HORIZONTAL_CENTERING = true
+	HORIZONTAL_CENTERING = false
 	SYNTAX_HIGHLIGHTING  = true
 )

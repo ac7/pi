@@ -23,5 +23,5 @@ func Draw(buf pi.IBuffer) {
 		modeString = "edit"
 	}
 
-	pi.Puts(2, h-2, fmt.Sprintf(fmt.Sprintf("%%-%ds%%s", w-14), statusLine, modeString), termbox.ColorRed|termbox.AttrBold, termbox.ColorWhite)
+	pi.Puts(2, h-2, fmt.Sprintf(fmt.Sprintf("%%-%ds%%s", w-14), statusLine, modeString), termbox.ColorRed|termbox.AttrBold, termbox.ColorDefault)
 }

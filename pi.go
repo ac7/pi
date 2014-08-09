@@ -13,6 +13,8 @@ const (
 // Injected by the main executable
 var Quit func()
 
+const KillKey = termbox.KeyCtrlQ
+
 // Represents a buffer in memory editable by a cursor
 type IBuffer interface {
 	IViewport
@@ -67,12 +69,6 @@ type ICursor interface {
 
 	// Handle an input event by the user
 	HandleEvent(termbox.Event)
-}
-
-func Puts(x, y int, str string, fg, bg termbox.Attribute) {
-	for pos, b := range str {
-		termbox.SetCell(x+pos, y, b, fg, bg)
-	}
 }
 
 const (

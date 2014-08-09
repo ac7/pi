@@ -8,6 +8,7 @@ import (
 
 	"github.com/ac7/pi"
 	"github.com/ac7/pi/buffer"
+	"github.com/ac7/pi/prompt"
 	"github.com/ac7/pi/status"
 )
 
@@ -68,7 +69,7 @@ func main() {
 
 		event := termbox.PollEvent()
 		if event.Key == termbox.KeyCtrlQ {
-			running = false
+			pi.Quit()
 			break
 		}
 		if buf.Cursor().Mode() == pi.MODE_NORMAL {
@@ -85,6 +86,11 @@ func main() {
 					bufferIndex = 0
 				}
 				status.Set(fmt.Sprintf(`Switched forward to file [%s]`, buffers[bufferIndex].Filename))
+			case ';':
+				if filename, ok := prompt.Ask("Filename:"); ok {
+					buffers = append(buffers, buffer.NewFromFile(filename))
+					bufferIndex = len(buffers) - 1
+				}
 			default:
 				buf.Cursor().HandleEvent(event)
 			}

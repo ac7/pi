@@ -79,13 +79,13 @@ func main() {
 				if bufferIndex < 0 {
 					bufferIndex = len(buffers) - 1
 				}
-				status.Set(fmt.Sprintf(`Switched backward to file [%s]`, buffers[bufferIndex].Filename))
+				status.Set(fmt.Sprintf(`Switched backward to file [%s]`, buffers[bufferIndex].Filename()))
 			case '}':
 				bufferIndex++
 				if bufferIndex >= len(buffers) {
 					bufferIndex = 0
 				}
-				status.Set(fmt.Sprintf(`Switched forward to file [%s]`, buffers[bufferIndex].Filename))
+				status.Set(fmt.Sprintf(`Switched forward to file [%s]`, buffers[bufferIndex].Filename()))
 			case ';':
 				if filename, ok := prompt.Ask("Filename:"); ok {
 					buffers = append(buffers, buffer.NewFromFile(filename))

@@ -1,6 +1,6 @@
 package lines
 
-import "github.com/ac7/pi"
+import "github.com/ac7/pi/interfaces"
 
 // Return the width of the line as it would be drawn on the screen. Automatically adjust for
 // tab characters.

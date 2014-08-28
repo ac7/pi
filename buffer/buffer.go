@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ac7/pi"
+	"github.com/ac7/pi/interfaces"
 	"github.com/ac7/pi/status"
 	"github.com/ac7/pi/syntax"
 	"github.com/nsf/termbox-go"

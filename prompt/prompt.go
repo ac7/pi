@@ -3,7 +3,7 @@ package prompt
 import (
 	"fmt"
 
-	"github.com/ac7/pi"
+	"github.com/ac7/pi/interfaces"
 	"github.com/nsf/termbox-go"
 )
 

@@ -3,7 +3,7 @@ package lines
 import (
 	"testing"
 
-	"github.com/ac7/pi"
+	"github.com/ac7/pi/interfaces"
 )
 
 func TestDisplayWidth(t *testing.T) {

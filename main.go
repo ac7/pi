@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nsf/termbox-go"
-
-	"github.com/ac7/pi"
 	"github.com/ac7/pi/buffer"
+	"github.com/ac7/pi/interfaces"
 	"github.com/ac7/pi/prompt"
 	"github.com/ac7/pi/status"
+	"github.com/nsf/termbox-go"
 )
 
 var running = true

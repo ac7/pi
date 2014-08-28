@@ -25,6 +25,8 @@ func (buf *buffer) loadData(data []byte) {
 	for i, l := range lines {
 		buf.lines[i] = string(l)
 	}
+	buf.highlightAll()
+	buf.findLongestLine()
 }
 
 func NewFromFile(filename string) pi.IBuffer {
@@ -43,8 +45,6 @@ func NewFromFile(filename string) pi.IBuffer {
 	buf := &buffer{filename: filename}
 
 	buf.loadData(data)
-	buf.highlightAll()
-	buf.findLongestLine()
 
 	buf.cursor = cursor.New(buf)
 	return buf
@@ -59,8 +59,6 @@ func NewFromStream(r io.Reader) pi.IBuffer {
 		buf.loadData(data)
 		status.Set(fmt.Sprintf("Read %d lines from stdin", len(buf.lines)))
 	}
-	buf.highlightAll()
-	buf.findLongestLine()
 
 	buf.cursor = cursor.New(buf)
 	return buf

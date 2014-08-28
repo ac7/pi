@@ -70,7 +70,7 @@ func Highlighting(line string) []termbox.Attribute {
 	for i := range attributes {
 		attributes[i] = termbox.ColorDefault
 	}
-	if !pi.SYNTAX_HIGHLIGHTING {
+	if !pi.SyntaxHighlighting {
 		return attributes
 	}
 

@@ -24,7 +24,7 @@ type buffer struct {
 
 func (buf *buffer) Width() int {
 	w, _ := termbox.Size()
-	return w - pi.LEFT_MARGIN
+	return w - pi.LeftMargin
 }
 
 func (buf *buffer) Height() int {

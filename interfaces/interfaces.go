@@ -5,9 +5,9 @@ import "github.com/nsf/termbox-go"
 type CursorMode int
 
 const (
-	MODE_NORMAL CursorMode = iota
-	MODE_SELECT
-	MODE_EDIT
+	ModeNormal CursorMode = iota
+	ModeSelect
+	ModeEdit
 )
 
 // Injected by the main executable
@@ -72,9 +72,9 @@ type ICursor interface {
 }
 
 const (
-	LEFT_MARGIN          = 4
-	TAB_WIDTH            = 8
-	CENTER_EVERY_FRAME   = false
-	HORIZONTAL_CENTERING = false
-	SYNTAX_HIGHLIGHTING  = true
+	LeftMargin          = 4
+	TabWidth            = 8
+	CenterEveryFrame    = false
+	HorizontalCentering = false
+	SyntaxHighlighting  = true
 )

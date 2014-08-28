@@ -17,9 +17,9 @@ func Draw(buf pi.IBuffer) {
 	w, h := termbox.Size()
 	var modeString string
 	switch buf.Cursor().Mode() {
-	case pi.MODE_NORMAL:
+	case pi.ModeNormal:
 		modeString = "normal"
-	case pi.MODE_EDIT:
+	case pi.ModeEdit:
 		modeString = "edit"
 	}
 

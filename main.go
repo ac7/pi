@@ -71,7 +71,7 @@ func main() {
 			pi.Quit()
 			break
 		}
-		if buf.Cursor().Mode() == pi.MODE_NORMAL {
+		if buf.Cursor().Mode() == pi.ModeNormal {
 			switch event.Ch {
 			case '{':
 				bufferIndex--

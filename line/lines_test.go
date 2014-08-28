@@ -11,10 +11,10 @@ func TestDisplayWidth(t *testing.T) {
 		s        string
 		expected int
 	}{
-		{`	hi`, pi.TAB_WIDTH + 2},
-		{`	`, pi.TAB_WIDTH},
+		{`	hi`, pi.TabWidth + 2},
+		{`	`, pi.TabWidth},
 		{`word`, 4},
-		{`word	`, 4 + pi.TAB_WIDTH},
+		{`word	`, 4 + pi.TabWidth},
 	}
 
 	for _, c := range cases {

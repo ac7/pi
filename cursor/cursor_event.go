@@ -15,7 +15,7 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 
 	// vi-ish keybindings
 	switch c.mode {
-	case pi.MODE_NORMAL, pi.MODE_SELECT:
+	case pi.ModeNormal, pi.ModeSelect:
 		if event.Key == termbox.KeyCtrlL {
 			c.buf.ForceRedraw()
 			return
@@ -65,15 +65,15 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 
 		// make edits
 		case 'i':
-			c.setMode(pi.MODE_EDIT)
+			c.setMode(pi.ModeEdit)
 		case 'a':
-			c.setMode(pi.MODE_EDIT)
+			c.setMode(pi.ModeEdit)
 			c.x++
 		case 'A':
-			c.setMode(pi.MODE_EDIT)
+			c.setMode(pi.ModeEdit)
 			c.x = len(c.buf.Line(c.y))
 		case 'I':
-			c.setMode(pi.MODE_EDIT)
+			c.setMode(pi.ModeEdit)
 			c.x = 0
 		case 'd':
 			c.cutBuffer = c.buf.Line(c.y)
@@ -93,9 +93,9 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 		case 'o':
 			c.y++
 			c.buf.InsertLine(c.y)
-			c.setMode(pi.MODE_EDIT)
+			c.setMode(pi.ModeEdit)
 		}
-	case pi.MODE_EDIT:
+	case pi.ModeEdit:
 		ch := event.Ch
 		if event.Key != 0 {
 			switch event.Key {
@@ -117,7 +117,7 @@ func (c *cursor) HandleEvent(event termbox.Event) {
 				}
 				return
 			case termbox.KeyCtrlC, termbox.KeyEsc:
-				c.setMode(pi.MODE_NORMAL)
+				c.setMode(pi.ModeNormal)
 				return
 			case termbox.KeyEnter:
 				line := c.buf.Line(c.y)

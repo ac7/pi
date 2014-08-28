@@ -8,14 +8,14 @@ import (
 )
 
 func (buf *buffer) Update() {
-	if pi.HORIZONTAL_CENTERING {
+	if pi.HorizontalCentering {
 		oldLeftEdge := buf.leftEdge
-		buf.leftEdge = buf.Width()/2 - buf.longestLineLen/2 - pi.LEFT_MARGIN
+		buf.leftEdge = buf.Width()/2 - buf.longestLineLen/2 - pi.LeftMargin
 		if oldLeftEdge != buf.leftEdge {
 			buf.ForceRedraw()
 		}
 	} else {
-		buf.leftEdge = pi.LEFT_MARGIN
+		buf.leftEdge = pi.LeftMargin
 	}
 	buf.cursor.Update()
 	buf.ForceRedraw()
@@ -39,7 +39,7 @@ func (buf *buffer) DrawLine(i int) {
 	line := buf.lines[i]
 
 	// line number
-	pi.Puts(buf.leftEdge-pi.LEFT_MARGIN, i-buf.topEdge, fmt.Sprintf(fmt.Sprintf("%%%dd", pi.LEFT_MARGIN-1), i+1), termbox.ColorCyan, termbox.ColorDefault)
+	pi.Puts(buf.leftEdge-pi.LeftMargin, i-buf.topEdge, fmt.Sprintf(fmt.Sprintf("%%%dd", pi.LeftMargin-1), i+1), termbox.ColorCyan, termbox.ColorDefault)
 
 	// actual line
 	pos := 0
@@ -48,7 +48,7 @@ func (buf *buffer) DrawLine(i int) {
 			buf.highlighting[i][x], termbox.ColorDefault)
 
 		if c == '\t' {
-			pos += pi.TAB_WIDTH
+			pos += pi.TabWidth
 		} else {
 			pos++
 		}

@@ -38,12 +38,12 @@ func (c *cursor) Update() {
 		c.x = len(c.buf.Line(c.y))
 	}
 
-	if pi.CENTER_EVERY_FRAME {
+	if pi.CenterEveryFrame {
 		c.buf.SetTopEdge(c.y - c.buf.Len()/2)
 	}
 
 	tabCount := strings.Count(c.buf.Line(c.y)[:c.x], "\t")
-	termbox.SetCursor(c.x+tabCount*(pi.TAB_WIDTH-1)+c.buf.LeftEdge(), c.y-c.buf.TopEdge())
+	termbox.SetCursor(c.x+tabCount*(pi.TabWidth-1)+c.buf.LeftEdge(), c.y-c.buf.TopEdge())
 }
 
 func (c *cursor) moveWord(forward bool) {
@@ -68,6 +68,6 @@ func New(buf pi.IBuffer) pi.ICursor {
 		x:    0,
 		y:    0,
 		buf:  buf,
-		mode: pi.MODE_NORMAL,
+		mode: pi.ModeNormal,
 	}
 }

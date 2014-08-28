@@ -2,8 +2,8 @@ package lines
 
 import "github.com/ac7/pi/interfaces"
 
-// Return the width of the line as it would be drawn on the screen. Automatically adjust for
-// tab characters.
+// DisplayWidth returns the width of the line as it would be drawn on the screen.
+// Automatically adjust for tab characters.
 func DisplayWidth(line string) int {
 	width := len(line)
 	for _, c := range line {

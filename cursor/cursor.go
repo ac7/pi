@@ -63,6 +63,7 @@ func (c *cursor) moveWord(forward bool) {
 	}
 }
 
+// New returns a cursor in the provided buffer
 func New(buf pi.IBuffer) pi.ICursor {
 	return &cursor{
 		x:    0,

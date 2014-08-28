@@ -18,6 +18,9 @@ func drawQuery(query string, partialAnswer string) (cursorX, cursorY int) {
 	return
 }
 
+// Ask requests for a string from the user given a certain query. The execution of the
+// program is halted while the user is typing. The ok return value signifies that the user
+// has confirmed their answer by pressing the enter key.
 func Ask(query string) (answer string, ok bool) {
 	for {
 		drawQuery(query, answer)

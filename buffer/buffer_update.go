@@ -39,7 +39,9 @@ func (buf *buffer) DrawLine(i int) {
 	line := buf.lines[i]
 
 	// line number
-	pi.Puts(buf.leftEdge-pi.LeftMargin, i-buf.topEdge, fmt.Sprintf(fmt.Sprintf("%%%dd", pi.LeftMargin-1), i+1), termbox.ColorCyan, termbox.ColorDefault)
+	lineNumberStr := fmt.Sprintf(fmt.Sprintf("%%%dd", pi.LeftMargin-1), i+1)
+	pi.Puts(buf.leftEdge-pi.LeftMargin, i-buf.topEdge, lineNumberStr,
+		termbox.ColorCyan, termbox.ColorDefault)
 
 	// actual line
 	pos := 0
